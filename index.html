@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apple Health Analysis — Chris</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0f1117; --card: #1a1d27; --border: #2a2d3a;
+    --text: #e4e4e7; --muted: #8b8d97; --accent: #6366f1;
+    --green: #22c55e; --red: #ef4444; --amber: #f59e0b; --cyan: #06b6d4;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); padding: 0; margin: 0; }
+
+  /* ═══ TOP NAV ═══ */
+  .site-header { background: var(--card); border-bottom: 1px solid var(--border); padding: 0 24px; position: sticky; top: 0; z-index: 100; }
+  .site-header-inner { max-width: 1400px; margin: 0 auto; display: flex; align-items: center; gap: 32px; height: 56px; }
+  .site-title { font-size: 16px; font-weight: 700; color: var(--text); white-space: nowrap; }
+  .site-title span { color: var(--accent); }
+  .tab-nav { display: flex; gap: 4px; height: 100%; }
+  .tab-btn { background: none; border: none; color: var(--muted); font-size: 14px; font-weight: 500; padding: 0 16px; cursor: pointer; position: relative; height: 100%; display: flex; align-items: center; transition: color 0.2s; }
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.active { color: var(--text); }
+  .tab-btn.active::after { content: ''; position: absolute; bottom: 0; left: 8px; right: 8px; height: 2px; background: var(--accent); border-radius: 1px 1px 0 0; }
+  .tab-icon { width: 18px; height: 18px; margin-right: 8px; opacity: 0.7; }
+  .tab-btn.active .tab-icon { opacity: 1; }
+
+  /* ═══ TAB CONTENT ═══ */
+  .tab-panel { display: none; padding: 24px; max-width: 1400px; margin: 0 auto; }
+  .tab-panel.active { display: block; }
+
+  /* ═══ SHARED DASHBOARD STYLES ═══ */
+  h1 { font-size: 28px; font-weight: 700; margin-bottom: 4px; }
+  .subtitle { color: var(--muted); font-size: 14px; margin-bottom: 32px; line-height: 1.5; }
+  .grid { display: grid; gap: 20px; margin-bottom: 24px; }
+  .grid-4 { grid-template-columns: repeat(4, 1fr); }
+  .grid-2 { grid-template-columns: repeat(2, 1fr); }
+  .grid-3 { grid-template-columns: repeat(3, 1fr); }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+  .stat-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .stat-value { font-size: 32px; font-weight: 700; }
+  .stat-sub { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  h2 { font-size: 20px; font-weight: 600; margin-bottom: 16px; }
+  h3 { font-size: 16px; font-weight: 600; margin-bottom: 12px; color: var(--muted); }
+  .chart-container { position: relative; height: 320px; }
+  .chart-container-tall { position: relative; height: 440px; }
+  .chart-container-sm { position: relative; height: 260px; }
+  .insight-box { padding: 16px; border-radius: 10px; margin-bottom: 12px; }
+  .insight-box.positive { background: rgba(34,197,94,0.1); border-left: 3px solid var(--green); }
+  .insight-box.negative { background: rgba(239,68,68,0.1); border-left: 3px solid var(--red); }
+  .insight-box.neutral { background: rgba(99,102,241,0.1); border-left: 3px solid var(--accent); }
+  .insight-box.amber { background: rgba(245,158,11,0.1); border-left: 3px solid var(--amber); }
+  .insight-title { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+  .insight-text { font-size: 13px; color: var(--muted); line-height: 1.6; }
+  .method-tag { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 4px; background: var(--border); color: var(--muted); margin-right: 4px; }
+  .section-header { margin: 36px 0 16px; }
+  table.data { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.data th { text-align: left; padding: 10px 12px; border-bottom: 2px solid var(--border); color: var(--muted); font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; }
+  table.data td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+  table.data tr:last-child td { border-bottom: none; }
+  table.data .num { text-align: right; font-variant-numeric: tabular-nums; }
+  .bar-cell { width: 120px; }
+  .bar-bg { height: 8px; border-radius: 4px; background: var(--border); position: relative; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 4px; position: absolute; }
+  .bar-fill.pos { background: var(--green); right: 50%; }
+  .bar-fill.neg { background: var(--red); left: 50%; }
+  .rank-badge { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 7px; font-size: 12px; font-weight: 700; }
+  .rank-badge.top { background: var(--accent); color: white; }
+  .rank-badge.reg { background: var(--border); color: var(--muted); }
+  .zone-bar { display: flex; height: 28px; border-radius: 6px; overflow: hidden; margin: 2px 0; }
+  .zone-bar div { display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: white; min-width: 0; }
+  .z1-color { background: #3b82f6; } .z2-color { background: #22c55e; } .z3-color { background: #f59e0b; } .z4-color { background: #f97316; } .z5-color { background: #ef4444; }
+  .legend-row { display: flex; gap: 16px; margin-bottom: 12px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+  .legend-dot { width: 12px; height: 12px; border-radius: 3px; }
+  .note { font-size: 12px; color: var(--muted); font-style: italic; margin-top: 8px; line-height: 1.5; }
+  footer { text-align: center; margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--border); }
+  footer p { font-size: 12px; color: var(--muted); line-height: 1.6; margin-bottom: 8px; }
+  @media (max-width: 900px) {
+    .grid-4 { grid-template-columns: repeat(2, 1fr); }
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    .site-title { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- STICKY HEADER WITH TABS                                       -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<header class="site-header">
+  <div class="site-header-inner">
+    <div class="site-title"><span>Apple Health</span> Analysis</div>
+    <nav class="tab-nav">
+      <button class="tab-btn active" data-tab="vo2max">
+        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        VO2 Max
+      </button>
+      <button class="tab-btn" data-tab="sleep">
+        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        Sleep
+      </button>
+    </nav>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- VO2 MAX TAB                                                    -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="tab-panel active" id="panel-vo2max">
+
+<h1>VO2 Max Analysis</h1>
+<p class="subtitle">Chris's Apple Health Data · Sept 2017 — Mar 2026 · 866 daily VO2 max readings · 3,708 workouts · 1.3M heart rate samples<br>
+Analysis: Pearson correlation, forward stepwise regression (R² = 0.80), decision tree ensemble, and heart rate zone time-in-zone analysis using actual max HR of 197 bpm.</p>
+
+<div class="grid grid-4">
+  <div class="card">
+    <div class="stat-label">Current VO2 Max</div>
+    <div class="stat-value" style="color: var(--green);">44.2</div>
+    <div class="stat-sub">mL/min/kg (Mar 2026)</div>
+  </div>
+  <div class="card">
+    <div class="stat-label">All-Time High</div>
+    <div class="stat-value" style="color: var(--cyan);">47.8</div>
+    <div class="stat-sub">mL/min/kg (Nov 2025)</div>
+  </div>
+  <div class="card">
+    <div class="stat-label">All-Time Range</div>
+    <div class="stat-value">32.2 – 47.8</div>
+    <div class="stat-sub">15.6 point spread over 8.5 years</div>
+  </div>
+  <div class="card">
+    <div class="stat-label">Actual Max HR</div>
+    <div class="stat-value" style="color: var(--accent);">197</div>
+    <div class="stat-sub">bpm (observed Jul 2025)</div>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom: 24px;">
+  <h2>VO2 Max Trend Over Time</h2>
+  <div class="chart-container"><canvas id="v-trendChart"></canvas></div>
+</div>
+
+<div class="section-header"><h2>Key Findings</h2></div>
+<div class="grid grid-2">
+  <div>
+    <div class="insight-box positive">
+      <div class="insight-title">1. High-Intensity Running Is a Primary Driver</div>
+      <div class="insight-text">Time-in-zone analysis reveals that during your peak VO2 max period (Oct–Nov 2025), your 17 running sessions averaged 55% Zone 3, 24% Zone 4, and 12% Zone 5. Combined Zone 4+5 minutes correlate at r = +0.68 (30-day). Running volume and intensity are major factors for your VO2 max.</div>
+    </div>
+    <div class="insight-box positive">
+      <div class="insight-title">2. Strength Training Provides a Strong Foundation</div>
+      <div class="insight-text">Traditional strength training minutes show r = +0.56 with VO2 max — the strongest single workout-type correlation. During your peak, you averaged 16 sessions of strength training over the two months. Strength training builds muscular efficiency that supports cardiovascular performance.</div>
+    </div>
+    <div class="insight-box positive">
+      <div class="insight-title">3. Heart Rate Recovery Tracks Fitness Closely</div>
+      <div class="insight-text">Your 1-minute heart rate recovery is the strongest individual health metric correlation (r = +0.73 over 30 days). During your peak it averaged 40.7 bpm vs 33.2 in the baseline period. This serves as both a leading indicator and a result of improving cardiovascular fitness.</div>
+    </div>
+  </div>
+  <div>
+    <div class="insight-box neutral">
+      <div class="insight-title">4. Polarized Training Distribution Works Best</div>
+      <div class="insight-text">Your peak period shows a polarized pattern: ~55% Zone 1, minimal Zone 2, and ~39% in Zone 3–5 (driven by intense runs). The "polarization index" (Z1+Z5 as % of total) correlates at r = +0.54. The extremes are more beneficial than the middle zones.</div>
+    </div>
+    <div class="insight-box amber">
+      <div class="insight-title">5. Volume Matters — But Intensity Matters More</div>
+      <div class="insight-text">Your recent training (Feb–Mar 2026) has the highest volume ever at 543 min/week — but 76% is Zone 1 with almost no Zone 4–5 time. VO2 max has dropped from 46.6 to 43.3. Compare this to your peak period at just 333 min/week but with 49 minutes of Zone 4+5 weekly.</div>
+    </div>
+    <div class="insight-box negative">
+      <div class="insight-title">6. Yoga Volume Inversely Correlates (Displacement Effect)</div>
+      <div class="insight-text">Yoga minutes show r = –0.51 with VO2 max. This doesn't mean yoga is harmful — rather, periods where yoga dominates your training at the expense of cardio and strength tend to coincide with lower VO2 max.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section-header"><h2>Heart Rate Zone Analysis</h2>
+<p class="subtitle" style="margin-bottom:0">Based on 1.3M individual heart rate samples matched to workout windows. Max HR = 197 bpm (observed). Zones: Z1 &lt;118, Z2 118–138, Z3 138–158, Z4 158–177, Z5 177+ bpm.</p>
+</div>
+
+<div class="card" style="margin-bottom: 20px;">
+  <h3>Time-in-Zone by Training Period</h3>
+  <div class="legend-row">
+    <div class="legend-item"><div class="legend-dot z1-color"></div>Zone 1 (Recovery)</div>
+    <div class="legend-item"><div class="legend-dot z2-color"></div>Zone 2 (Easy Aerobic)</div>
+    <div class="legend-item"><div class="legend-dot z3-color"></div>Zone 3 (Tempo)</div>
+    <div class="legend-item"><div class="legend-dot z4-color"></div>Zone 4 (Threshold)</div>
+    <div class="legend-item"><div class="legend-dot z5-color"></div>Zone 5 (VO2 Max)</div>
+  </div>
+  <table class="data">
+    <thead>
+      <tr><th>Period</th><th class="num">VO2 Max</th><th class="num">Min/Week</th><th style="width:40%">Zone Distribution (actual time)</th><th class="num">Z4+Z5 Min/Wk</th></tr>
+    </thead>
+    <tbody id="v-zoneTable"></tbody>
+  </table>
+</div>
+
+<div class="grid grid-2">
+  <div class="card">
+    <h3>Weekly Zone Minutes by Period</h3>
+    <div class="chart-container"><canvas id="v-zoneStackedChart"></canvas></div>
+  </div>
+  <div class="card">
+    <h3>Zone Correlations with VO2 Max (30-day rolling)</h3>
+    <div class="chart-container"><canvas id="v-zoneCorrChart"></canvas></div>
+  </div>
+</div>
+
+<div class="card" style="margin-top: 20px;">
+  <h3>Peak Period (Oct–Nov 2025): Time-in-Zone by Workout Type</h3>
+  <table class="data">
+    <thead>
+      <tr><th>Workout Type</th><th class="num">Sessions</th><th class="num">Total Min</th><th style="width:35%">Zone Distribution</th><th class="num">Avg HR</th><th class="num">Max HR</th></tr>
+    </thead>
+    <tbody id="v-peakWorkoutTable"></tbody>
+  </table>
+  <p class="note">Running sessions drove nearly all of the Zone 3–5 time during the peak period, while walking and yoga provided high-volume Zone 1 base.</p>
+</div>
+
+<div class="section-header"><h2>Comprehensive Factor Rankings</h2>
+<p class="subtitle" style="margin-bottom:0">Ranked by composite score across correlation, stepwise regression, tree ensemble, and zone analysis. All training metrics are 14-day rolling averages.</p>
+</div>
+
+<div class="card">
+  <div class="chart-container-tall"><canvas id="v-factorChart"></canvas></div>
+</div>
+
+<div class="card" style="margin-top: 20px;">
+  <h3>Detailed Factor Table</h3>
+  <table class="data">
+    <thead>
+      <tr><th style="width:30px">Rank</th><th>Factor</th><th class="num">Correlation</th><th class="bar-cell">Strength</th><th>Direction</th></tr>
+    </thead>
+    <tbody id="v-factorTable"></tbody>
+  </table>
+  <p class="note" style="margin-top:12px">
+    <span class="method-tag">Pearson Correlation</span> Direct linear relationship with VO2 max
+    <span class="method-tag">Stepwise Regression</span> Forward selection, R² = 0.80 with 20 features
+    <span class="method-tag">Tree Ensemble</span> 100 random decision trees for non-linear patterns
+    <span class="method-tag">Time-in-Zone</span> 1.3M HR samples matched to workout windows, max HR = 197
+  </p>
+</div>
+
+<div class="section-header"><h2>Training Profile</h2></div>
+<div class="grid grid-3">
+  <div class="card">
+    <h3>Workout Distribution (All Time)</h3>
+    <div class="chart-container-sm"><canvas id="v-workoutPie"></canvas></div>
+  </div>
+  <div class="card">
+    <h3>Walking HR (Passive Fitness Indicator)</h3>
+    <div class="chart-container-sm"><canvas id="v-walkingHrChart"></canvas></div>
+  </div>
+  <div class="card">
+    <h3>HR Recovery 1-min (Leading Indicator)</h3>
+    <div class="chart-container-sm"><canvas id="v-hrRecoveryChart"></canvas></div>
+  </div>
+</div>
+
+<div class="section-header"><h2>Actionable Recommendations</h2></div>
+<div class="grid grid-2">
+  <div>
+    <div class="insight-box positive">
+      <div class="insight-title">1. Restore Zone 4–5 Running Volume</div>
+      <div class="insight-text">Your current training has dropped to near-zero Zone 4–5 time. During your peak you logged ~49 min/week in these zones. Reintroduce 2–3 hard running sessions per week with tempo intervals or threshold runs.</div>
+    </div>
+    <div class="insight-box positive">
+      <div class="insight-title">2. Maintain Strength Training Consistency</div>
+      <div class="insight-text">Keep 2–3 traditional strength sessions per week. Both frequency (r = +0.52) and total minutes (r = +0.56) contribute independently to VO2 max.</div>
+    </div>
+    <div class="insight-box positive">
+      <div class="insight-title">3. Track Heart Rate Recovery</div>
+      <div class="insight-text">Monitor your 1-minute HR recovery as a leading indicator (r = +0.73). At your peak it averaged 41 bpm; during lower fitness periods it dropped to 33.</div>
+    </div>
+  </div>
+  <div>
+    <div class="insight-box neutral">
+      <div class="insight-title">4. Aim for a Polarized Training Distribution</div>
+      <div class="insight-text">Your best results came from ~55% Zone 1 + ~39% Zone 3–5 with very little Zone 2. Keep your easy days truly easy and your hard days genuinely hard.</div>
+    </div>
+    <div class="insight-box neutral">
+      <div class="insight-title">5. Prioritize REM Sleep Quality</div>
+      <div class="insight-text">Among sleep metrics, REM sleep hours showed the clearest positive contribution in the regression model (β = +0.57 standardized). Consistent sleep schedules and limiting late alcohol can improve REM proportion.</div>
+    </div>
+    <div class="insight-box amber">
+      <div class="insight-title">6. Watch Walking Heart Rate as a Passive Signal</div>
+      <div class="insight-text">Average walking heart rate is strongly inversely correlated (r = –0.59). A higher HR during casual walking reflects lower cardiovascular efficiency. Just watch the trend in the Health app.</div>
+    </div>
+  </div>
+</div>
+
+<div class="card" style="margin-top: 24px;">
+  <h3>Methodology Notes</h3>
+  <p style="font-size: 13px; color: var(--muted); line-height: 1.7;">
+    Data was extracted from 4GB Apple Health export.xml via streaming XML parser. All metrics were aggregated to daily level and combined using 7, 14, and 30-day rolling averages. VO2 max readings (n=866 daily, 1,208 total) served as the target variable. Analysis methods: (1) Pearson correlation across all feature/VO2max pairs; (2) Forward stepwise linear regression selecting 20 features for a final R² = 0.80; (3) 100-tree random decision ensemble for non-linear feature importance; (4) Heart rate zone analysis using 1.3M individual HR samples matched to 1,383 workout windows via binary search, with zones calculated from observed max HR of 197 bpm.
+  </p>
+</div>
+
+<p style="text-align: center; color: var(--muted); font-size: 12px; margin-top: 32px;">Analysis based on 866 VO2 max readings, 3,708 workouts, 1.3M HR samples, and 10M+ health records from Apple Watch · Generated March 2026</p>
+
+</div><!-- end vo2max panel -->
+
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLEEP TAB                                                      -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="tab-panel" id="panel-sleep">
+
+<h1>Sleep Analysis</h1>
+<div class="subtitle">
+  Chris's Apple Health Data · Sep 2022 — Mar 2026 · 1,113 nights with stage data · 87 features evaluated<br>
+  Analysis: Pearson correlation, forward stepwise regression, and tertile analysis across exercise, physiological, environmental, and dietary factors.
+</div>
+
+<div class="grid grid-4">
+  <div class="card">
+    <div class="stat-label">Average Total Sleep</div>
+    <div class="stat-value">7.82<span style="font-size: 20px;">h</span></div>
+  </div>
+  <div class="card">
+    <div class="stat-label">Average Deep Sleep</div>
+    <div class="stat-value">0.97<span style="font-size: 20px;">h</span></div>
+  </div>
+  <div class="card">
+    <div class="stat-label">Average REM Sleep</div>
+    <div class="stat-value">1.83<span style="font-size: 20px;">h</span></div>
+  </div>
+  <div class="card">
+    <div class="stat-label">Sleep Efficiency</div>
+    <div class="stat-value">70<span style="font-size: 20px;">%</span></div>
+  </div>
+</div>
+
+<h2 class="section-header">Model Performance</h2>
+<div class="insight-box neutral">
+  <div class="insight-title">Sleep Efficiency Is Most Predictable</div>
+  <div class="insight-text">R² = 0.44 for sleep efficiency, compared to 0.12 for total sleep, 0.12 for deep sleep, and 0.11 for REM sleep. Sleep quality markers (SpO₂, activity, daylight, consistency) explain efficiency variation much better than sleep duration.</div>
+</div>
+
+<h2 class="section-header">Key Findings</h2>
+<div class="grid grid-2">
+  <div class="insight-box positive">
+    <div class="insight-title">Blood Oxygen Is the #1 Sleep Quality Marker</div>
+    <div class="insight-text">SpO₂ minimum r = +0.33 with efficiency, SpO₂ variability r = −0.28. Good breathing patterns correlate strongly with better sleep quality.</div>
+  </div>
+  <div class="insight-box positive">
+    <div class="insight-title">Daily Activity Drives Sleep Efficiency</div>
+    <div class="insight-text">Workout count r = +0.32, stand hours r = +0.31, active energy r = +0.30. Any movement throughout the day improves sleep quality.</div>
+  </div>
+  <div class="insight-box positive">
+    <div class="insight-title">Daylight Exposure Boosts Sleep Duration</div>
+    <div class="insight-text">High daylight days: 8.13h sleep, 1.06h deep. Low daylight days: 7.80h, 0.96h deep. Average 75 min/day, median 55 min. Natural light exposure adds ~20 min to total sleep.</div>
+  </div>
+  <div class="insight-box neutral">
+    <div class="insight-title">HIIT Is the Champion for Deep Sleep</div>
+    <div class="insight-text">HIIT workouts add +12 min deep sleep and +14 min total sleep. Largest effect size of any workout type, including strength training and running.</div>
+  </div>
+  <div class="insight-box neutral">
+    <div class="insight-title">Afternoon Workouts Are the Sweet Spot</div>
+    <div class="insight-text">Afternoon exercise adds +15 min sleep AND +13% efficiency. Morning workouts boost efficiency (+16%) but reduce total duration (−11 min).</div>
+  </div>
+  <div class="insight-box amber">
+    <div class="insight-title">Sleep Duration Remains Hard to Predict</div>
+    <div class="insight-text">R² = 0.12 means 88% remains unexplained. Stress, caffeine, screens, room temperature, and circadian factors dominate. Apple Health captures efficiency well but not duration.</div>
+  </div>
+</div>
+
+<h2 class="section-header">Sleep Efficiency: Top Factors</h2>
+<div class="card">
+  <table class="data" id="s-efficiencyTable">
+    <thead>
+      <tr><th style="width: 30px;"></th><th>Factor</th><th class="num">Correlation</th><th style="width: 120px;">Strength</th><th>Direction</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<h2 class="section-header">Sleep Stage Distribution & Model Accuracy</h2>
+<div class="grid grid-2">
+  <div class="card">
+    <h3>Sleep Stages (Average Night)</h3>
+    <div class="chart-container"><canvas id="s-stageChart"></canvas></div>
+  </div>
+  <div class="card">
+    <h3>R² by Metric</h3>
+    <div class="chart-container"><canvas id="s-accuracyChart"></canvas></div>
+  </div>
+</div>
+
+<h2 class="section-header">Total Sleep, Deep Sleep & REM Factors</h2>
+<div class="grid grid-3">
+  <div class="card">
+    <h3>Total Sleep Drivers</h3>
+    <table class="data" id="s-totalSleepTable"><thead><tr><th>Factor</th><th class="num">r</th></tr></thead><tbody></tbody></table>
+  </div>
+  <div class="card">
+    <h3>Deep Sleep Drivers</h3>
+    <table class="data" id="s-deepSleepTable"><thead><tr><th>Factor</th><th class="num">r</th></tr></thead><tbody></tbody></table>
+  </div>
+  <div class="card">
+    <h3>REM Drivers</h3>
+    <table class="data" id="s-remSleepTable"><thead><tr><th>Factor</th><th class="num">r</th></tr></thead><tbody></tbody></table>
+  </div>
+</div>
+
+<h2 class="section-header">Workout Type Impact</h2>
+<div class="card">
+  <h3>Sleep Changes by Exercise Type</h3>
+  <div class="chart-container-tall"><canvas id="s-workoutChart"></canvas></div>
+  <table class="data" id="s-workoutTable" style="margin-top: 20px;">
+    <thead><tr><th>Type</th><th class="num">Total Sleep Δ</th><th class="num">Deep Sleep Δ</th><th class="num">Efficiency Δ</th><th>Best For</th></tr></thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<h2 class="section-header">Timing & Day of Week</h2>
+<div class="grid grid-2">
+  <div class="card">
+    <h3>Workout Timing Impact</h3>
+    <div class="chart-container"><canvas id="s-timingChart"></canvas></div>
+  </div>
+  <div class="card">
+    <h3>Sleep by Day of Week</h3>
+    <div class="chart-container"><canvas id="s-dayOfWeekChart"></canvas></div>
+  </div>
+</div>
+
+<h2 class="section-header">Seasonal Patterns</h2>
+<div class="card">
+  <h3>Monthly Sleep Duration & Deep Sleep</h3>
+  <div class="chart-container"><canvas id="s-seasonalChart"></canvas></div>
+  <p class="note">Peak sleep duration in April–May (8.3h), lowest in December–January (7.6h). Deep sleep follows similar seasonal pattern.</p>
+</div>
+
+<h2 class="section-header">Physiological Deep Dives</h2>
+<div class="grid grid-2">
+  <div class="insight-box neutral">
+    <div class="insight-title">Blood Oxygen (SpO₂) Dynamics</div>
+    <div class="insight-text">Minimum SpO₂ r = +0.33 with efficiency; variability (std dev) r = −0.28. Stable, higher oxygen levels during sleep correlate with better sleep quality. May indicate undiagnosed sleep apnea in low-minimum nights.</div>
+  </div>
+  <div class="insight-box neutral">
+    <div class="insight-title">Daylight Exposure</div>
+    <div class="insight-text">Average 75 min/day (median 55 min). High daylight days yield 8.13h sleep vs 7.80h on low daylight days. +20 min/day difference. Critical for circadian rhythm regulation.</div>
+  </div>
+  <div class="insight-box neutral">
+    <div class="insight-title">Breathing Disturbances</div>
+    <div class="insight-text">Mean 0.79/hr across 455 nights. Counterintuitive positive correlation with REM sleep, likely reflects normal REM-stage breathing variability rather than pathology.</div>
+  </div>
+  <div class="insight-box neutral">
+    <div class="insight-title">Evening Noise</div>
+    <div class="insight-text">Average 63.3 dB (evening). Positive correlation with deep sleep (r = +0.15) likely reflects social engagement and daytime activity rather than actual noise disruption.</div>
+  </div>
+  <div class="insight-box neutral">
+    <div class="insight-title">Mindfulness & Meditation</div>
+    <div class="insight-text">Only 86/1,026 days recorded (8.4%). Shows −0.15h sleep but +0.09 REM%. Likely confounded by high-stress days driving both increased meditation and fragmented sleep.</div>
+  </div>
+  <div class="insight-box neutral">
+    <div class="insight-title">Dietary Factors</div>
+    <div class="insight-text">Only ~74 days tracked. Carbs r = +0.11 total sleep, water r = +0.09, vitamin D r = +0.15 deep sleep. Limited data; correlations are suggestive only.</div>
+  </div>
+</div>
+
+<h2 class="section-header">Regression Model: Building Sleep Efficiency R²</h2>
+<div class="card">
+  <h3>Forward Stepwise Model Construction</h3>
+  <div class="chart-container"><canvas id="s-regressionChart"></canvas></div>
+  <table class="data" id="s-regressionTable" style="margin-top: 20px;">
+    <thead><tr><th>Step</th><th>Added Factor</th><th class="num">R²</th><th class="num">Δ R²</th></tr></thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<h2 class="section-header">Recommendations</h2>
+<div class="grid grid-2">
+  <div class="insight-box positive">
+    <div class="insight-title">Monitor Blood Oxygen</div>
+    <div class="insight-text">#1 efficiency predictor (r = +0.33). Track SpO₂ minimum and variability. If minimum regularly drops below 92%, consider sleep apnea screening with healthcare provider.</div>
+  </div>
+  <div class="insight-box positive">
+    <div class="insight-title">Get More Daylight</div>
+    <div class="insight-text">Target 75+ minutes daily. High daylight days yield +20 min sleep and +6 min deep sleep. Morning light exposure is especially effective for circadian rhythm.</div>
+  </div>
+  <div class="insight-box positive">
+    <div class="insight-title">Exercise in the Afternoon</div>
+    <div class="insight-text">Afternoon workouts add +15 min sleep AND +13% efficiency. Morning exercises boost efficiency but reduce duration; evening workouts are neutral.</div>
+  </div>
+  <div class="insight-box positive">
+    <div class="insight-title">Prioritize HIIT for Deep Sleep</div>
+    <div class="insight-text">HIIT adds +12 min deep sleep per session, the largest effect of any workout type. Running is best for efficiency; HIIT for deep sleep duration.</div>
+  </div>
+  <div class="insight-box neutral">
+    <div class="insight-title">Stay Consistent with Bedtimes</div>
+    <div class="insight-text">Bedtime consistency is a top-10 efficiency predictor. ±30 min variance is acceptable; ±2+ hours significantly reduces sleep quality.</div>
+  </div>
+  <div class="insight-box neutral">
+    <div class="insight-title">Plan for Seasonal Dips</div>
+    <div class="insight-text">April–May peak at 8.3h sleep, 1.1h deep. December–January trough at 7.6h, 0.90h deep. Expect and adjust activity/daylight in winter months.</div>
+  </div>
+  <div class="insight-box neutral">
+    <div class="insight-title">Any Workout Beats None</div>
+    <div class="insight-text">Consistency matters more than type. Even 10 min of walking (r = +0.28) or light strength training (r = +0.11) improves efficiency over no activity.</div>
+  </div>
+  <div class="insight-box amber">
+    <div class="insight-title">Watch Morning Workouts</div>
+    <div class="insight-text">Morning exercise boosts efficiency (+16%) but reduces total duration (−11 min). If aiming for longer sleep, shift to afternoon/evening; if aiming for quality, mornings work.</div>
+  </div>
+</div>
+
+<h2 class="section-header">Caveats & Data Limitations</h2>
+<div class="card">
+  <ul style="list-style: none; padding: 0;">
+    <li style="margin-bottom: 8px;"><strong>Dietary Data:</strong> Only ~74 days of logging (7.2%). Correlations suggestive, not reliable for decision-making.</li>
+    <li style="margin-bottom: 8px;"><strong>SpO₂ Units:</strong> Stored as decimal fraction (0–1.0), not percentage. All values are typical for healthy individuals.</li>
+    <li style="margin-bottom: 8px;"><strong>Wrist Temperature:</strong> Mean 96.7°F. Limited variation; no strong predictive signal.</li>
+    <li style="margin-bottom: 8px;"><strong>Evening Noise Correlation:</strong> Positive association (r = +0.15 with deep sleep) likely reflects social engagement and daytime activity, not actual noise disruption.</li>
+    <li style="margin-bottom: 8px;"><strong>Mindfulness Sessions:</strong> Only 86 days (8.4%). Confounded by high-stress periods driving both increased meditation and fragmented sleep.</li>
+    <li style="margin-bottom: 8px;"><strong>Breathing Disturbances:</strong> Only 455 nights (41.8%) with data. Positive REM correlation is normal; not a pathology indicator.</li>
+    <li style="margin-bottom: 8px;"><strong>Model Explains 44% of Sleep Efficiency, 12% of Duration.</strong> 56–88% driven by unmeasured factors: stress, caffeine, screen time, ambient temperature, partner disruption, illness.</li>
+  </ul>
+</div>
+
+<footer>
+  <p>Analysis based on 1,113 nights, 87 features, including exercise, SpO₂, daylight, noise, dietary, and physiological metrics from Apple Watch · Generated March 2026</p>
+  <p>Correlational findings. Correlation ≠ causation. Consult healthcare providers before making medical decisions based on these correlations.</p>
+</footer>
+
+</div><!-- end sleep panel -->
+
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ALL JAVASCRIPT                                                 -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<script>
+// ════════════════════════════════════════════════════════════════════
+// TAB SWITCHING
+// ════════════════════════════════════════════════════════════════════
+const chartInstances = {};
+let vo2Initialized = false;
+let sleepInitialized = false;
+
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    const panel = document.getElementById('panel-' + btn.dataset.tab);
+    panel.classList.add('active');
+
+    // Initialize charts on first show (Chart.js needs visible canvas)
+    if (btn.dataset.tab === 'vo2max' && !vo2Initialized) { initVO2Charts(); vo2Initialized = true; }
+    if (btn.dataset.tab === 'sleep' && !sleepInitialized) { initSleepCharts(); sleepInitialized = true; }
+
+    // Resize charts when switching tabs
+    Object.values(Chart.instances).forEach(c => c.resize());
+  });
+});
+
+// ════════════════════════════════════════════════════════════════════
+// VO2 MAX DATA
+// ════════════════════════════════════════════════════════════════════
+const trendData = {"2017-09":42.62,"2017-10":39.32,"2017-11":39.35,"2017-12":39.41,"2018-02":39.43,"2018-05":38.0,"2018-10":39.03,"2018-11":39.4,"2018-12":40.66,"2019-01":40.53,"2019-02":40.72,"2019-04":40.91,"2019-05":41.12,"2019-06":41.37,"2019-10":35.63,"2019-11":35.24,"2019-12":35.10,"2020-01":34.58,"2020-02":34.31,"2020-03":34.26,"2020-04":34.18,"2020-05":32.21,"2020-06":33.57,"2020-07":35.16,"2020-08":37.25,"2020-09":36.09,"2020-10":35.63,"2020-11":35.73,"2020-12":39.24,"2021-01":39.30,"2021-02":39.12,"2021-03":39.85,"2021-04":38.62,"2021-05":38.24,"2021-06":39.80,"2021-07":41.48,"2021-08":38.88,"2021-09":39.61,"2021-10":40.64,"2021-11":39.88,"2021-12":42.10,"2022-01":40.13,"2022-02":40.70,"2022-03":40.39,"2022-04":40.68,"2022-05":39.66,"2022-06":40.44,"2022-07":39.71,"2022-08":41.38,"2022-09":41.04,"2022-10":41.89,"2022-11":42.37,"2022-12":40.34,"2023-01":41.36,"2023-02":41.10,"2023-03":41.27,"2023-05":40.36,"2023-06":38.81,"2023-07":37.19,"2023-08":37.56,"2023-09":38.35,"2023-10":37.73,"2023-11":38.03,"2023-12":38.24,"2024-01":37.25,"2024-02":40.95,"2024-03":40.00,"2024-04":41.03,"2024-05":40.99,"2024-06":41.28,"2024-07":42.74,"2024-08":42.92,"2024-09":43.06,"2024-10":43.92,"2024-11":43.43,"2024-12":41.75,"2025-01":41.16,"2025-02":41.20,"2025-03":40.22,"2025-04":39.36,"2025-05":40.57,"2025-06":39.36,"2025-07":39.48,"2025-08":40.00,"2025-09":41.11,"2025-10":44.71,"2025-11":46.59,"2025-12":44.51,"2026-01":45.44,"2026-02":42.84,"2026-03":44.21};
+
+const zonePeriods = [
+  {label:"May–Jul 2025",vo2:39.8,mpw:192,z:[35.0,24.8,30.7,8.9,0.5],z45mpw:18},
+  {label:"Aug–Sep 2025",vo2:40.7,mpw:181,z:[53.8,8.9,25.4,10.4,1.5],z45mpw:22},
+  {label:"Oct–Nov 2025 (Peak)",vo2:45.6,mpw:333,z:[55.1,6.5,23.6,10.1,4.8],z45mpw:49},
+  {label:"Dec 2025–Jan 2026",vo2:45.0,mpw:439,z:[73.6,13.6,8.7,2.9,1.1],z45mpw:18},
+  {label:"Feb–Mar 2026",vo2:43.3,mpw:543,z:[76.0,18.3,3.0,2.5,0.2],z45mpw:15},
+];
+
+const peakWorkouts = [
+  {type:"Running",n:17,min:1160,z:[2.0,6.4,55.4,24.4,11.7],avgHr:156,maxHr:175},
+  {type:"Walking",n:34,min:667,z:[97.6,2.3,0.1,0.0,0.0],avgHr:83,maxHr:101},
+  {type:"Yoga",n:8,min:396,z:[98.8,1.2,0.0,0.0,0.0],avgHr:88,maxHr:116},
+  {type:"Strength",n:14,min:308,z:[69.4,22.1,7.4,1.1,0.0],avgHr:110,maxHr:132},
+  {type:"Cycling",n:9,min:95,z:[88.2,6.9,4.9,0.0,0.0],avgHr:86,maxHr:107},
+  {type:"Climbing",n:2,min:221,z:[93.4,6.2,0.4,0.0,0.0],avgHr:92,maxHr:146},
+];
+
+const factors = [
+  {rank:1,name:"Zone 4+5 Time (30d)",corr:0.680,dir:"More threshold/VO2max work → higher VO2 max"},
+  {rank:2,name:"Heart Rate Recovery 1min (30d)",corr:0.732,dir:"Faster recovery after effort → higher VO2 max"},
+  {rank:3,name:"Zone 1 Time (30d)",corr:0.691,dir:"More easy base volume → higher VO2 max"},
+  {rank:4,name:"Zone 5 Time (30d)",corr:0.633,dir:"More VO2 max-intensity work → higher VO2 max"},
+  {rank:5,name:"Strength Training Minutes (14d)",corr:0.555,dir:"More strength training → higher VO2 max"},
+  {rank:6,name:"Polarization Index (30d)",corr:0.582,dir:"More polarized (easy+hard) → higher VO2 max"},
+  {rank:7,name:"Total Workout Count (14d)",corr:0.533,dir:"More sessions per week → higher VO2 max"},
+  {rank:8,name:"Walking Workout Minutes (14d)",corr:0.517,dir:"More walking volume → higher VO2 max"},
+  {rank:9,name:"Total Workout Minutes (14d)",corr:0.487,dir:"More total training volume → higher VO2 max"},
+  {rank:10,name:"Zone 4 Time (30d)",corr:0.642,dir:"More threshold work → higher VO2 max"},
+  {rank:11,name:"Walking Heart Rate Avg (14d)",corr:-0.590,dir:"Lower walking HR → higher VO2 max"},
+  {rank:12,name:"Yoga Minutes (14d)",corr:-0.513,dir:"More yoga (less cardio) → lower VO2 max"},
+  {rank:13,name:"Zone 3 Time (14d)",corr:0.397,dir:"More tempo work → moderately higher VO2 max"},
+  {rank:14,name:"REM Sleep Hours (14d)",corr:0.151,dir:"More REM sleep → slightly higher VO2 max"},
+  {rank:15,name:"Walking Speed (14d)",corr:-0.438,dir:"Lower casual walking speed → higher VO2 max"},
+];
+
+const zoneCorrs = [
+  {zone:"Z1 Time",r14:0.506,r30:0.523},{zone:"Z2 Time",r14:0.304,r30:0.349},
+  {zone:"Z3 Time",r14:0.397,r30:0.401},{zone:"Z4 Time",r14:0.492,r30:0.642},
+  {zone:"Z5 Time",r14:0.515,r30:0.633},{zone:"Z4+Z5 Time",r14:0.565,r30:0.680},
+  {zone:"Polarization",r14:0.542,r30:0.582},{zone:"Total Volume",r14:0.524,r30:0.544},
+];
+
+const zColors = ['#3b82f6','#22c55e','#f59e0b','#f97316','#ef4444'];
+
+// ════════════════════════════════════════════════════════════════════
+// VO2 MAX TABLE BUILDERS (run immediately since tab is visible)
+// ════════════════════════════════════════════════════════════════════
+function buildVO2Tables() {
+  // Zone table
+  const zt = document.getElementById('v-zoneTable');
+  zonePeriods.forEach(p => {
+    const isPeak = p.label.includes('Peak');
+    const tr = document.createElement('tr');
+    if(isPeak) tr.style.background = 'rgba(99,102,241,0.08)';
+    let barHtml = '<div class="zone-bar">';
+    const zLabels = ['Z1','Z2','Z3','Z4','Z5'];
+    p.z.forEach((pct,i) => {
+      if(pct >= 1.5) barHtml += `<div class="${['z1-color','z2-color','z3-color','z4-color','z5-color'][i]}" style="width:${pct}%">${pct>=5?zLabels[i]+' '+pct.toFixed(0)+'%':''}</div>`;
+      else if(pct > 0) barHtml += `<div class="${['z1-color','z2-color','z3-color','z4-color','z5-color'][i]}" style="width:${Math.max(pct,0.5)}%"></div>`;
+    });
+    barHtml += '</div>';
+    tr.innerHTML = `
+      <td style="font-weight:${isPeak?'700':'400'}">${p.label}</td>
+      <td class="num" style="font-weight:700;color:${p.vo2>=44?'var(--green)':p.vo2>=42?'var(--cyan)':'var(--text)'}">${p.vo2}</td>
+      <td class="num">${p.mpw}</td>
+      <td>${barHtml}</td>
+      <td class="num" style="font-weight:700;color:${p.z45mpw>=40?'var(--green)':p.z45mpw>=20?'var(--amber)':'var(--red)'}">${p.z45mpw}</td>
+    `;
+    zt.appendChild(tr);
+  });
+
+  // Peak workout table
+  const pwt = document.getElementById('v-peakWorkoutTable');
+  peakWorkouts.forEach(w => {
+    let bar = '<div class="zone-bar">';
+    w.z.forEach((p,i) => {
+      if(p>=0.5) bar += `<div class="${['z1-color','z2-color','z3-color','z4-color','z5-color'][i]}" style="width:${Math.max(p,1)}%">${p>=5?p.toFixed(0)+'%':''}</div>`;
+    });
+    bar += '</div>';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td style="font-weight:600">${w.type}</td><td class="num">${w.n}</td><td class="num">${w.min}</td><td>${bar}</td><td class="num">${w.avgHr}</td><td class="num">${w.maxHr}</td>`;
+    pwt.appendChild(tr);
+  });
+
+  // Factor table
+  const ft = document.getElementById('v-factorTable');
+  factors.forEach(f => {
+    const isPos = f.corr > 0;
+    const barW = Math.abs(f.corr)/0.75*50;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><span class="rank-badge ${f.rank<=3?'top':'reg'}">${f.rank}</span></td>
+      <td style="font-weight:500">${f.name}</td>
+      <td class="num" style="color:${isPos?'var(--green)':'var(--red)'}; font-weight:600">${isPos?'+':''}${f.corr.toFixed(3)}</td>
+      <td class="bar-cell"><div class="bar-bg"><div class="bar-fill ${isPos?'pos':'neg'}" style="width:${barW}%"></div></div></td>
+      <td style="font-size:12px;color:var(--muted)">${f.dir}</td>
+    `;
+    ft.appendChild(tr);
+  });
+}
+
+// ════════════════════════════════════════════════════════════════════
+// VO2 MAX CHARTS
+// ════════════════════════════════════════════════════════════════════
+function initVO2Charts() {
+  // Trend
+  new Chart(document.getElementById('v-trendChart'), {
+    type:'line',
+    data:{
+      labels: Object.keys(trendData),
+      datasets:[{label:'VO2 Max (monthly avg)',data:Object.values(trendData),borderColor:'#6366f1',backgroundColor:'rgba(99,102,241,0.1)',fill:true,tension:0.3,pointRadius:2,pointHoverRadius:6,borderWidth:2.5}]
+    },
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`VO2 Max: ${ctx.parsed.y.toFixed(1)} mL/min/kg`}}},scales:{x:{ticks:{color:'#8b8d97',maxTicksLimit:20,maxRotation:45},grid:{color:'#2a2d3a'}},y:{ticks:{color:'#8b8d97'},grid:{color:'#2a2d3a'},title:{display:true,text:'mL/min/kg',color:'#8b8d97'}}}}
+  });
+
+  // Zone stacked bar
+  new Chart(document.getElementById('v-zoneStackedChart'), {
+    type:'bar',
+    data:{
+      labels:zonePeriods.map(p=>p.label.replace(' (Peak)','\n(Peak)')),
+      datasets:['Z1 (<118)','Z2 (118-138)','Z3 (138-158)','Z4 (158-177)','Z5 (177+)'].map((label,i)=>({
+        label,data:zonePeriods.map(p=>Math.round(p.mpw*p.z[i]/100)),backgroundColor:zColors[i],borderRadius:i===4?{topLeft:4,topRight:4}:0
+      }))
+    },
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e4e4e7',font:{size:11}},position:'bottom'},tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.parsed.y} min/week`}}},scales:{x:{stacked:true,ticks:{color:'#8b8d97',font:{size:11}},grid:{display:false}},y:{stacked:true,ticks:{color:'#8b8d97'},grid:{color:'#2a2d3a'},title:{display:true,text:'Minutes/Week',color:'#8b8d97'}}}}
+  });
+
+  // Zone correlation
+  new Chart(document.getElementById('v-zoneCorrChart'), {
+    type:'bar',
+    data:{
+      labels:zoneCorrs.map(z=>z.zone),
+      datasets:[
+        {label:'14-day rolling',data:zoneCorrs.map(z=>z.r14),backgroundColor:'rgba(99,102,241,0.5)',borderRadius:4,barPercentage:0.7},
+        {label:'30-day rolling',data:zoneCorrs.map(z=>z.r30),backgroundColor:'rgba(6,182,212,0.7)',borderRadius:4,barPercentage:0.7}
+      ]
+    },
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e4e4e7',font:{size:11}},position:'bottom'},tooltip:{callbacks:{label:ctx=>`r = +${ctx.parsed.y.toFixed(3)}`}}},scales:{x:{ticks:{color:'#8b8d97',font:{size:11}},grid:{display:false}},y:{ticks:{color:'#8b8d97',callback:v=>'+'+v.toFixed(1)},grid:{color:'#2a2d3a'},min:0,max:0.8,title:{display:true,text:'Correlation (r)',color:'#8b8d97'}}}}
+  });
+
+  // Factor chart
+  new Chart(document.getElementById('v-factorChart'), {
+    type:'bar',
+    data:{labels:factors.map(f=>f.name),datasets:[{data:factors.map(f=>f.corr),backgroundColor:factors.map(f=>f.corr>0?'#22c55e':'#ef4444'),borderRadius:4,barThickness:22}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`Correlation: ${ctx.parsed.x>0?'+':''}${ctx.parsed.x.toFixed(3)}`}}},scales:{x:{ticks:{color:'#8b8d97',callback:v=>(v>0?'+':'')+v.toFixed(1)},grid:{color:'#2a2d3a'},title:{display:true,text:'Correlation with VO2 Max',color:'#8b8d97'},min:-0.7,max:0.8},y:{ticks:{color:'#e4e4e7',font:{size:12}},grid:{display:false}}}}
+  });
+
+  // Workout pie
+  new Chart(document.getElementById('v-workoutPie'), {
+    type:'doughnut',
+    data:{labels:['Walking','Yoga','Cycling','Running','HIIT','Func. Strength','Trad. Strength','Other','Hiking','Elliptical'],datasets:[{data:[1318,925,410,227,193,176,106,105,47,43],backgroundColor:['#6366f1','#a78bfa','#06b6d4','#22c55e','#f59e0b','#ec4899','#ef4444','#8b8d97','#14b8a6','#f97316'],borderWidth:0}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#e4e4e7',font:{size:11},padding:8,boxWidth:12}}}}
+  });
+
+  // Walking HR & Recovery sparklines
+  const periodLabels = ['May-Jul\n2025','Aug-Sep\n2025','Oct-Nov\n2025','Dec-Jan\n2026','Feb-Mar\n2026'];
+
+  new Chart(document.getElementById('v-walkingHrChart'), {
+    type:'line',
+    data:{labels:periodLabels,datasets:[
+      {label:'Walking HR (bpm)',data:[92.4,90.1,87.0,86.2,88.5],borderColor:'#ef4444',backgroundColor:'rgba(239,68,68,0.1)',fill:true,tension:0.3,pointRadius:5,borderWidth:2.5},
+      {label:'VO2 Max',data:[39.8,40.7,45.6,45.0,43.3],borderColor:'#6366f1',borderDash:[5,5],tension:0.3,pointRadius:4,borderWidth:2,yAxisID:'y2'}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e4e4e7',font:{size:10}},position:'bottom'}},scales:{x:{ticks:{color:'#8b8d97',font:{size:10}},grid:{display:false}},y:{ticks:{color:'#ef4444',font:{size:10}},grid:{color:'#2a2d3a'},title:{display:true,text:'bpm',color:'#8b8d97'},reverse:true},y2:{position:'right',ticks:{color:'#6366f1',font:{size:10}},grid:{display:false},title:{display:true,text:'VO2',color:'#8b8d97'}}}}
+  });
+
+  new Chart(document.getElementById('v-hrRecoveryChart'), {
+    type:'line',
+    data:{labels:periodLabels,datasets:[
+      {label:'HR Recovery 1min (bpm)',data:[33.2,35.5,40.7,39.8,37.2],borderColor:'#22c55e',backgroundColor:'rgba(34,197,94,0.1)',fill:true,tension:0.3,pointRadius:5,borderWidth:2.5},
+      {label:'VO2 Max',data:[39.8,40.7,45.6,45.0,43.3],borderColor:'#6366f1',borderDash:[5,5],tension:0.3,pointRadius:4,borderWidth:2,yAxisID:'y2'}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e4e4e7',font:{size:10}},position:'bottom'}},scales:{x:{ticks:{color:'#8b8d97',font:{size:10}},grid:{display:false}},y:{ticks:{color:'#22c55e',font:{size:10}},grid:{color:'#2a2d3a'},title:{display:true,text:'bpm',color:'#8b8d97'}},y2:{position:'right',ticks:{color:'#6366f1',font:{size:10}},grid:{display:false},title:{display:true,text:'VO2',color:'#8b8d97'}}}}
+  });
+}
+
+// ════════════════════════════════════════════════════════════════════
+// SLEEP DATA
+// ════════════════════════════════════════════════════════════════════
+const efficiencyFactors = [
+  {name:'Nighttime SpO₂ Minimum',r:0.330,direction:'Higher minimum O₂ → better efficiency'},
+  {name:'Workout Count',r:0.322,direction:'More sessions → better sleep'},
+  {name:'Respiratory Rate',r:-0.320,direction:'Lower resting resp rate → better efficiency'},
+  {name:'Apple Stand Hours',r:0.310,direction:'Movement throughout day → better sleep'},
+  {name:'Active Energy Burned',r:0.296,direction:'Higher activity → better sleep'},
+  {name:'Morning Workouts',r:0.288,direction:'Morning exercise → efficiency boost'},
+  {name:'SpO₂ Nighttime Std Dev',r:-0.283,direction:'Stable O₂ levels → better efficiency'},
+  {name:'Walking Sessions',r:0.282,direction:'Regular walking → better quality'},
+  {name:'Workout Total Minutes',r:0.276,direction:'More exercise time → better sleep'},
+  {name:'Stand Time',r:0.268,direction:'Less sedentary → better sleep'}
+];
+
+const totalSleepFactors = [
+  {name:'Body Fat %',r:0.21},{name:'Body Mass',r:0.20},{name:'Afternoon Workouts',r:0.12},
+  {name:'Previous Night Deep',r:0.12},{name:'Carbs Intake',r:0.11},{name:'Weekend',r:0.10},
+  {name:'Daylight Minutes',r:0.09},{name:'Morning Workouts',r:-0.08}
+];
+
+const deepSleepFactors = [
+  {name:'Body Mass',r:0.21},{name:'Evening Noise Level',r:0.15},{name:'Vitamin D',r:0.15},
+  {name:'Evening Headphone dB',r:0.14},{name:'Functional Strength',r:0.12},{name:'HIIT',r:0.08}
+];
+
+const remSleepFactors = [
+  {name:'Nighttime SpO₂ Mean',r:0.18},{name:'Water Intake',r:0.15},{name:'Vitamin D',r:-0.15},
+  {name:'Weekend',r:0.11},{name:'Respiratory Rate',r:-0.11},{name:'Mindful Sessions',r:0.09}
+];
+
+const workoutTypes = [
+  {type:'HIIT',totalDelta:'+0.24h ***',deepDelta:'+0.12h **',effDelta:'+0.03',best:'Max deep sleep & total duration'},
+  {type:'Running',totalDelta:'+0.02',deepDelta:'-0.08*',effDelta:'+0.21 ***',best:'Sleep efficiency'},
+  {type:'Cycling',totalDelta:'+0.12h **',deepDelta:'+0.06h *',effDelta:'+0.11 **',best:'Balanced improvement'},
+  {type:'Walking',totalDelta:'+0.05h *',deepDelta:'-0.03',effDelta:'+0.17 **',best:'Efficiency with light activity'},
+  {type:'Trad Strength',totalDelta:'-0.20h **',deepDelta:'-0.09h *',effDelta:'+0.21 ***',best:'Efficiency despite shorter sleep'},
+  {type:'Func Strength',totalDelta:'+0.11h **',deepDelta:'+0.09h *',effDelta:'+0.03',best:'Moderate across board'},
+  {type:'Yoga',totalDelta:'+0.13h **',deepDelta:'-0.00',effDelta:'-0.02',best:'Duration, neutral efficiency'}
+];
+
+const regressionSteps = [
+  {step:1,factor:'Nighttime SpO₂ Minimum',r2:0.11,delta:'0.11'},
+  {step:2,factor:'Workout Count',r2:0.18,delta:'0.07'},
+  {step:3,factor:'Stand Hours',r2:0.22,delta:'0.04'},
+  {step:4,factor:'Resting Heart Rate',r2:0.26,delta:'0.04'},
+  {step:5,factor:'Same-night SpO₂ Min',r2:0.29,delta:'0.03'},
+  {step:6,factor:'Yoga Minutes',r2:0.32,delta:'0.03'},
+  {step:7,factor:'Month',r2:0.33,delta:'0.01'},
+  {step:8,factor:'Respiratory Rate',r2:0.35,delta:'0.02'},
+  {step:9,factor:'Breathing Disturbances',r2:0.36,delta:'0.01'},
+  {step:10,factor:'Bedtime Consistency',r2:0.37,delta:'0.01'},
+  {step:'Final',factor:'Full Model',r2:0.44,delta:'0.07'}
+];
+
+// ════════════════════════════════════════════════════════════════════
+// SLEEP TABLE BUILDERS
+// ════════════════════════════════════════════════════════════════════
+function buildSleepTables() {
+  const cc = {accent:'#6366f1',green:'#22c55e',red:'#ef4444',amber:'#f59e0b',cyan:'#06b6d4',muted:'#8b8d97',border:'#2a2d3a'};
+
+  // Efficiency table
+  const et = document.getElementById('s-efficiencyTable').querySelector('tbody');
+  efficiencyFactors.forEach((f,idx) => {
+    const isTop = Math.abs(f.r) >= 0.30;
+    const barPct = (Math.abs(f.r)/0.33)*100;
+    const isNeg = f.r < 0;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><span class="rank-badge ${isTop?'top':'reg'}">${idx+1}</span></td>
+      <td>${f.name}</td>
+      <td class="num">${f.r>0?'+':''}${f.r.toFixed(3)}</td>
+      <td class="bar-cell"><div class="bar-bg"><div class="bar-fill ${isNeg?'neg':'pos'}" style="width:${barPct}%"></div></div></td>
+      <td style="font-size:12px;color:var(--muted)">${f.direction}</td>
+    `;
+    et.appendChild(tr);
+  });
+
+  // Helper for simple factor tables
+  function fillSimpleTable(id, data) {
+    const tbody = document.getElementById(id).querySelector('tbody');
+    data.forEach(f => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${f.name}</td><td class="num">${f.r>0?'+':''}${f.r.toFixed(2)}</td>`;
+      tbody.appendChild(tr);
+    });
+  }
+  fillSimpleTable('s-totalSleepTable', totalSleepFactors);
+  fillSimpleTable('s-deepSleepTable', deepSleepFactors);
+  fillSimpleTable('s-remSleepTable', remSleepFactors);
+
+  // Workout table
+  const wt = document.getElementById('s-workoutTable').querySelector('tbody');
+  workoutTypes.forEach(w => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${w.type}</td><td class="num">${w.totalDelta}</td><td class="num">${w.deepDelta}</td><td class="num">${w.effDelta}</td><td style="font-size:12px">${w.best}</td>`;
+    wt.appendChild(tr);
+  });
+
+  // Regression table
+  const rt = document.getElementById('s-regressionTable').querySelector('tbody');
+  regressionSteps.forEach(s => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${s.step}</td><td>${s.factor}</td><td class="num">${s.r2.toFixed(2)}</td><td class="num">${typeof s.delta==='string'?s.delta:'+'+s.delta.toFixed(2)}</td>`;
+    rt.appendChild(tr);
+  });
+}
+
+// ════════════════════════════════════════════════════════════════════
+// SLEEP CHARTS
+// ════════════════════════════════════════════════════════════════════
+function initSleepCharts() {
+  const cc = {accent:'#6366f1',green:'#22c55e',red:'#ef4444',amber:'#f59e0b',cyan:'#06b6d4',muted:'#8b8d97',border:'#2a2d3a'};
+
+  // Stage doughnut
+  new Chart(document.getElementById('s-stageChart'), {
+    type:'doughnut',
+    data:{labels:['Light Sleep','Deep Sleep','REM Sleep'],datasets:[{data:[4.02,0.97,1.83],backgroundColor:[cc.cyan,cc.green,cc.accent],borderColor:'#1a1d27',borderWidth:2}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:cc.muted,font:{size:12},padding:12}}}}
+  });
+
+  // R² accuracy
+  new Chart(document.getElementById('s-accuracyChart'), {
+    type:'bar',
+    data:{labels:['Efficiency','Total Sleep','Deep Sleep','REM Sleep'],datasets:[{label:'R²',data:[0.44,0.12,0.12,0.11],backgroundColor:[cc.accent,cc.red,cc.red,cc.red],borderColor:cc.border,borderWidth:1}]},
+    options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{grid:{color:cc.border},ticks:{color:cc.muted,font:{size:11}},max:0.5},y:{grid:{display:false},ticks:{color:cc.muted,font:{size:12}}}}}
+  });
+
+  // Workout grouped bar
+  new Chart(document.getElementById('s-workoutChart'), {
+    type:'bar',
+    data:{labels:['HIIT','Running','Cycling','Walking','Trad Strength','Func Strength','Yoga'],datasets:[
+      {label:'Total Sleep Δ (hours)',data:[0.24,0.02,0.12,0.05,-0.20,0.11,0.13],backgroundColor:cc.cyan,borderColor:cc.border,borderWidth:1},
+      {label:'Deep Sleep Δ (hours)',data:[0.12,-0.08,0.06,-0.03,-0.09,0.09,0],backgroundColor:cc.green,borderColor:cc.border,borderWidth:1},
+      {label:'Efficiency Δ',data:[0.03,0.21,0.11,0.17,0.21,0.03,-0.02],backgroundColor:cc.accent,borderColor:cc.border,borderWidth:1}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:cc.muted,font:{size:12},padding:12}}},scales:{y:{grid:{color:cc.border},ticks:{color:cc.muted,font:{size:11}}},x:{grid:{display:false},ticks:{color:cc.muted,font:{size:11}}}}}
+  });
+
+  // Timing
+  new Chart(document.getElementById('s-timingChart'), {
+    type:'bar',
+    data:{labels:['Morning','Afternoon','Evening'],datasets:[
+      {label:'Total Sleep Δ (hours)',data:[-0.19,0.25,0.21],backgroundColor:cc.cyan,borderColor:cc.border,borderWidth:1},
+      {label:'Efficiency Δ',data:[0.16,0.13,0.05],backgroundColor:cc.green,borderColor:cc.border,borderWidth:1}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{position:'bottom',labels:{color:cc.muted,font:{size:12},padding:12}}},scales:{x:{grid:{color:cc.border},ticks:{color:cc.muted,font:{size:11}}},y:{grid:{display:false},ticks:{color:cc.muted,font:{size:12}}}}}
+  });
+
+  // Day of week
+  new Chart(document.getElementById('s-dayOfWeekChart'), {
+    type:'line',
+    data:{labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],datasets:[
+      {label:'Total Sleep (hours)',data:[7.79,7.85,7.79,7.49,7.96,8.10,7.74],borderColor:cc.cyan,backgroundColor:'transparent',borderWidth:2,pointBackgroundColor:cc.cyan,pointRadius:4,tension:0.3},
+      {label:'Deep Sleep (hours)',data:[0.97,0.92,0.99,0.99,0.97,1.01,0.92],borderColor:cc.green,backgroundColor:'transparent',borderWidth:2,pointBackgroundColor:cc.green,pointRadius:4,tension:0.3}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:cc.muted,font:{size:12},padding:12}}},scales:{y:{grid:{color:cc.border},ticks:{color:cc.muted,font:{size:11}}},x:{grid:{display:false},ticks:{color:cc.muted,font:{size:12}}}}}
+  });
+
+  // Seasonal
+  new Chart(document.getElementById('s-seasonalChart'), {
+    type:'bar',
+    data:{labels:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],datasets:[
+      {label:'Total Sleep (hours)',data:[7.62,7.75,7.86,8.26,8.30,7.90,7.85,8.11,7.86,7.69,7.77,7.58],backgroundColor:cc.cyan,borderColor:cc.border,borderWidth:1},
+      {label:'Deep Sleep (hours)',data:[0.88,0.92,0.95,1.10,1.13,1.00,0.98,1.05,0.98,0.94,0.96,0.90],backgroundColor:cc.green,borderColor:cc.border,borderWidth:1}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:cc.muted,font:{size:12},padding:12}}},scales:{y:{grid:{color:cc.border},ticks:{color:cc.muted,font:{size:11}}},x:{grid:{display:false},ticks:{color:cc.muted,font:{size:11}}}}}
+  });
+
+  // Regression bar
+  new Chart(document.getElementById('s-regressionChart'), {
+    type:'bar',
+    data:{labels:['Step 1','Step 2','Step 3','Step 4','Step 5','Step 6','Step 7','Step 8','Step 9','Step 10','Final'],datasets:[{label:'R²',data:[0.11,0.18,0.22,0.26,0.29,0.32,0.33,0.35,0.36,0.37,0.44],backgroundColor:cc.accent,borderColor:cc.border,borderWidth:1}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{grid:{color:cc.border},ticks:{color:cc.muted,font:{size:11}},max:0.5},x:{grid:{display:false},ticks:{color:cc.muted,font:{size:11}}}}}
+  });
+}
+
+// ════════════════════════════════════════════════════════════════════
+// INIT ON LOAD
+// ════════════════════════════════════════════════════════════════════
+buildVO2Tables();
+buildSleepTables();
+initVO2Charts();
+vo2Initialized = true;
+</script>
+</body>
+</html>
