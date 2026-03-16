@@ -102,6 +102,10 @@
         <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
         VO2 Max
       </button>
+      <button class="tab-btn" data-tab="rhr">
+        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        Resting HR
+      </button>
       <button class="tab-btn" data-tab="sleep">
         <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
         Sleep
@@ -146,19 +150,23 @@
     <div class="stat-sub" style="color: var(--green);">Up from 88.9% in Aug 2023</div>
   </div>
   <div class="card">
-    <div class="stat-label">HR Recovery</div>
-    <div class="stat-value" style="color: var(--cyan);">40.7<span style="font-size: 20px;">bpm</span></div>
-    <div class="stat-sub">1-min recovery at peak fitness</div>
-    <div class="stat-sub" style="color: var(--cyan);">Strongest VO2 correlate (r = +0.73)</div>
+    <div class="stat-label">Resting HR</div>
+    <div class="stat-value" style="color: var(--cyan);">54.4<span style="font-size: 20px;">bpm</span></div>
+    <div class="stat-sub">Current · Best: 50.0 (Aug 2025)</div>
+    <div class="stat-sub" style="color: var(--amber);">Up 4.4 bpm from summer low</div>
   </div>
 </div>
 
 <!-- Trend charts row -->
 <h2 class="section-header">Trends at a Glance</h2>
-<div class="grid grid-3">
+<div class="grid grid-2">
   <div class="card">
     <h3>VO2 Max (8.5 Years)</h3>
     <div class="chart-container-sm"><canvas id="ov-vo2Trend"></canvas></div>
+  </div>
+  <div class="card">
+    <h3>Resting HR (7.5 Years)</h3>
+    <div class="chart-container-sm"><canvas id="ov-rhrTrend"></canvas></div>
   </div>
   <div class="card">
     <h3>SpO₂ Minimum (4 Years)</h3>
@@ -175,19 +183,19 @@
 <div class="grid grid-2">
   <div class="insight-box negative">
     <div class="insight-title">Restore High-Intensity Training</div>
-    <div class="insight-text">Your current training is the highest volume ever (543 min/week) but 76% is Zone 1 with near-zero Zone 4–5 time. VO2 max has dropped from 46.6 to 43.3. During your peak you trained less (333 min/week) but with 49 min of Z4+5. Reintroduce 2–3 hard running sessions per week.</div>
+    <div class="insight-text">Your training is the highest volume ever (543 min/week) but 76% is Zone 1 with near-zero Zone 4–5 time. VO2 max has dropped from 46.6 to 43.3. Meanwhile, HIIT is your #1 RHR reducer (−3.7 bpm next-day effect) — the Feb–Aug 2022 HIIT block produced your all-time RHR low of 45.4 bpm. Reintroduce 2–3 hard sessions per week.</div>
   </div>
   <div class="insight-box amber">
-    <div class="insight-title">Manage Summer Allergies</div>
-    <div class="insight-text">SpO₂ drops ~1% every summer (Aug worst at 91.4%), aligning with mugwort/Artemisia pollen in Barcelona. Short outdoor workouts (&lt;25 min) in summer actually worsen SpO₂, but sessions over 55 min neutralize the penalty. Consider allergy management Jul–Nov.</div>
+    <div class="insight-title">Manage Seasonal Allergies</div>
+    <div class="insight-text">SpO₂ drops ~1% every summer (Aug worst at 91.4%) from mugwort pollen in Barcelona. Your RHR also climbs 2–3 bpm each spring (Mar–May) across 7+ years of data. Proactive allergy treatment could blunt both effects — and sessions over 55 min neutralize the SpO₂ penalty.</div>
   </div>
   <div class="insight-box positive">
-    <div class="insight-title">Keep Running &amp; HIIT Outdoors</div>
-    <div class="insight-text">Running (+1.18%) and HIIT (+1.40%) provide the largest detrended SpO₂ benefits. Outdoor workouts consistently beat indoor (+0.77% vs. +0.46%), with a clear dose-response — longer sessions yield better results. HIIT is also the #1 workout type for deep sleep (+12 min).</div>
+    <div class="insight-title">Morning Outdoor Exercise Is the Universal Win</div>
+    <div class="insight-text">Morning workouts lower next-day RHR 2.5× more than evening sessions (−0.9 vs −0.4 bpm). Outdoor beats indoor for SpO₂ (+0.77% vs +0.46%). Afternoon exercise adds +15 min sleep and +13% efficiency. Running and HIIT top both the VO2 max and RHR charts — intensity matters more than duration.</div>
   </div>
   <div class="insight-box positive">
-    <div class="insight-title">Prioritize Daylight Exposure</div>
-    <div class="insight-text">High daylight days add +20 min total sleep and +6 min deep sleep. Average is 75 min/day (median 55). Morning light is especially effective for circadian rhythm. Combined with afternoon exercise (+15 min sleep, +13% efficiency), this is the simplest sleep optimization.</div>
+    <div class="insight-title">Prioritize Daylight &amp; Sleep Quality</div>
+    <div class="insight-text">High daylight days add +20 min total sleep and +6 min deep sleep. REM sleep is the strongest sleep contributor to VO2 max (β = +0.57), and SpO₂ minimum is the #1 sleep efficiency predictor (r = +0.33). The virtuous cycle: better breathing → better sleep → better fitness → lower resting heart rate.</div>
   </div>
 </div>
 
@@ -464,6 +472,209 @@ Analysis: Pearson correlation, forward stepwise regression (R² = 0.80), decisio
 </footer>
 
 </div><!-- end vo2max panel -->
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- RESTING HEART RATE TAB                                         -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="tab-panel" id="panel-rhr">
+
+<h1>Resting Heart Rate</h1>
+<div class="subtitle">Sep 2018 – Mar 2026 · 2,692 daily measurements · Apple Watch</div>
+
+<div class="grid grid-4">
+  <div class="card">
+    <div class="stat-label">Current RHR</div>
+    <div class="stat-value" style="color: var(--amber);">54.4</div>
+    <div class="stat-sub">bpm (Mar 2026)</div>
+    <div class="stat-sub">Up from Aug 2025 low of 50.0</div>
+  </div>
+  <div class="card">
+    <div class="stat-label">All-Time Best</div>
+    <div class="stat-value" style="color: var(--green);">45.4</div>
+    <div class="stat-sub">bpm (Apr 2022)</div>
+    <div class="stat-sub" style="color: var(--green);">Elite cardiovascular fitness</div>
+  </div>
+  <div class="card">
+    <div class="stat-label">All-Time Range</div>
+    <div class="stat-value">45 – 63</div>
+    <div class="stat-sub">bpm across 7.5 years</div>
+    <div class="stat-sub">Worst: Jan 2019 (62.7 bpm)</div>
+  </div>
+  <div class="card">
+    <div class="stat-label">HRV (Current)</div>
+    <div class="stat-value" style="color: var(--cyan);">70.2<span style="font-size: 20px;">ms</span></div>
+    <div class="stat-sub">Mar 2026 · Best: 81 ms (Oct 2024)</div>
+    <div class="stat-sub" style="color: var(--amber);">Down from peak — watch trend</div>
+  </div>
+</div>
+
+<!-- ── Section 1: Trends ─────────────────────────────────────── -->
+<h2 class="section-header">Trends &amp; Variability</h2>
+<div class="subtitle">Long-term RHR and walking HR trends with HRV overlay</div>
+
+<div class="card" style="margin-bottom: 24px;">
+  <h3>RHR &amp; Walking HR Trend</h3>
+  <div class="chart-container"><canvas id="r-trendChart"></canvas></div>
+</div>
+
+<div class="card" style="margin-bottom: 24px;">
+  <h3>Heart Rate Variability (HRV) Trend</h3>
+  <div class="chart-container-sm"><canvas id="r-hrvChart"></canvas></div>
+</div>
+
+<div class="grid grid-2">
+  <div class="insight-box neutral">
+    <div class="insight-title">Three Distinct Fitness Peaks</div>
+    <div class="insight-text">Your all-time best RHR was Apr 2022 (45.4 bpm), during a period of consistent cardio. You had earlier dips in Jul–Aug 2020 (49.4 bpm) and Sep–Dec 2019 (50.6 bpm). The most recent low was Aug 2025 (50.0 bpm), coinciding with peak training volume and the VO2 Max surge. RHR has since climbed back to ~54–56 bpm.</div>
+  </div>
+  <div class="insight-box amber">
+    <div class="insight-title">Spring Is Consistently Your Worst Season</div>
+    <div class="insight-text">Spring averages 55.3 bpm vs. summer/autumn at 52.5–52.7, likely reflecting seasonal detraining and allergen exposure. The worst single month was Jan 2019 (62.7 bpm), early in your Apple Watch history. Walking HR follows the same spring spike pattern (98+ bpm in Mar).</div>
+  </div>
+</div>
+
+<!-- ── Section 2: What Drives RHR ────────────────────────────── -->
+<h2 class="section-header">What Drives Your RHR</h2>
+<div class="subtitle">Detrended correlations removing the long-term fitness trend</div>
+
+<div class="grid grid-2">
+  <div class="card">
+    <h3>Factor Correlations (Detrended)</h3>
+    <div class="chart-container"><canvas id="r-factorChart"></canvas></div>
+  </div>
+  <div class="card">
+    <h3>Seasonal Pattern</h3>
+    <div class="chart-container"><canvas id="r-seasonChart"></canvas></div>
+  </div>
+</div>
+
+<div class="grid grid-2">
+  <div class="insight-box neutral">
+    <div class="insight-title">Body Mass &amp; Walking HR Are the Top Predictors</div>
+    <div class="insight-text">Walking HR is the strongest RHR correlate (r = +0.31) — both reflect the same underlying cardiovascular fitness. Body mass is equally strong (r = +0.31): your 12 lb weight loss from Jun–Sep 2025 (157 → 145 lbs) directly contributed to the RHR improvement.</div>
+  </div>
+  <div class="insight-box neutral">
+    <div class="insight-title">HRV Mirrors RHR as Expected</div>
+    <div class="insight-text">HRV and RHR move as expected inverses (r = −0.22). Your best HRV months (Oct 2024: 81 ms, Oct–Nov 2025: 77 ms) coincide with your lowest RHR periods. Feb 2026 saw a notable HRV dip to 65 ms — worth monitoring.</div>
+  </div>
+</div>
+
+<!-- ── Section 3: Exercise Impact ──────────────────────────────── -->
+<h2 class="section-header">Exercise Impact</h2>
+<div class="subtitle">How workout type, timing, and volume affect next-day RHR (detrended)</div>
+
+<div class="grid grid-2">
+  <div class="card">
+    <h3>Next-Day RHR by Workout Type (Detrended)</h3>
+    <div class="chart-container"><canvas id="r-workoutTypeChart"></canvas></div>
+  </div>
+  <div class="card">
+    <h3>Workout Timing → Next-Day RHR</h3>
+    <div class="chart-container"><canvas id="r-timingChart"></canvas></div>
+  </div>
+</div>
+
+<div class="grid grid-2">
+  <div class="card">
+    <h3>Number of Daily Sessions → Next-Day RHR</h3>
+    <div class="chart-container"><canvas id="r-countChart"></canvas></div>
+  </div>
+  <div class="card">
+    <h3>Active Energy → Next-Day RHR</h3>
+    <div class="chart-container"><canvas id="r-energyChart"></canvas></div>
+  </div>
+</div>
+
+<div class="grid grid-2">
+  <div class="insight-box positive">
+    <div class="insight-title">HIIT Is the #1 RHR Reducer</div>
+    <div class="insight-text">HIIT days produce the largest next-day RHR drop (−3.7 bpm vs rest days), followed by swimming (−2.1) and running (−1.1). The full-history data reveals HIIT's dominant effect — your Feb–Aug 2022 period of 11–14 HIIT sessions/month coincided with your all-time RHR low of 45.4 bpm.</div>
+  </div>
+  <div class="insight-box positive">
+    <div class="insight-title">Morning Workouts Are Most Effective</div>
+    <div class="insight-text">Morning exercise produces the largest next-day RHR drop (−0.9 bpm vs rest days), roughly 2.5× the evening effect (−0.4 bpm). Afternoon falls in between (−0.8). This suggests morning training gives the body more recovery time to shift into parasympathetic mode overnight.</div>
+  </div>
+</div>
+
+<!-- ── Section 4: Recovery & Body Composition ─────────────────── -->
+<h2 class="section-header">Recovery &amp; Body Composition</h2>
+<div class="subtitle">Acute workout effects and long-term body mass trends</div>
+
+<div class="grid grid-2">
+  <div class="card">
+    <h3>Next-Day RHR by Workout Duration</h3>
+    <div class="chart-container"><canvas id="r-recoveryChart"></canvas></div>
+  </div>
+  <div class="card">
+    <h3>Body Mass &amp; RHR</h3>
+    <div class="chart-container"><canvas id="r-bodyMassChart"></canvas></div>
+  </div>
+</div>
+
+<div class="grid grid-2">
+  <div class="insight-box positive">
+    <div class="insight-title">Any Exercise Helps, But Diminishing Returns After 1 Session</div>
+    <div class="insight-text">Rest days raise next-day RHR by +0.5 bpm vs trend. A single session drops it by −0.3 bpm — the biggest jump. Adding more sessions shows diminishing returns: 2 sessions = −0.2, 3+ = −0.2 bpm. The 500–750 cal energy band (−0.9 bpm) is the sweet spot — going above 1,000 cal doesn't add further benefit (−0.8 bpm).</div>
+  </div>
+  <div class="insight-box neutral">
+    <div class="insight-title">Warmer Weather Lowers RHR</div>
+    <div class="insight-text">Ambient temperature has an inverse relationship (r = −0.31 detrended): warmer weather associates with lower RHR. This is likely mediated by increased outdoor activity and lighter body mass in summer months.</div>
+  </div>
+</div>
+
+<!-- ── Section 5: Reference Data ─────────────────────────────── -->
+<h2 class="section-header">Reference Data</h2>
+<div class="subtitle">Key statistics and correlations</div>
+
+<div class="grid grid-2">
+  <div class="card">
+    <h3>RHR Factor Correlations</h3>
+    <table class="data">
+      <thead><tr><th>Factor</th><th class="num">Raw r</th><th class="num">Detrended r</th><th>Direction</th></tr></thead>
+      <tbody id="r-factorTable"></tbody>
+    </table>
+  </div>
+  <div class="card">
+    <h3>Seasonal &amp; Weekly Patterns</h3>
+    <table class="data">
+      <thead><tr><th>Period</th><th class="num">Avg RHR</th><th class="num">Std</th></tr></thead>
+      <tbody id="r-seasonTable"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ── Section 5: Recommendations ─────────────────────────────── -->
+<h2 class="section-header">Recommendations</h2>
+
+<div class="grid grid-2">
+  <div class="insight-box negative">
+    <div class="insight-title">Maintain Training Volume Through Winter</div>
+    <div class="insight-text">Your Dec 2025 RHR spike to 56 bpm coincided with reduced workout volume. Even maintaining 400 min/week (vs the 540 min/week peak) could prevent the seasonal climb. The Apr 2022 low (45.4 bpm) was sustained by consistent year-round training.</div>
+  </div>
+  <div class="insight-box amber">
+    <div class="insight-title">Watch the Weight Creep</div>
+    <div class="insight-text">Body mass is rebounding (145 → 148 lbs). The strong RHR-mass correlation (r = +0.31) means each pound regained adds roughly 0.3 bpm to resting heart rate. During your 2022 RHR peak, weight was also at a lower range.</div>
+  </div>
+  <div class="insight-box amber">
+    <div class="insight-title">Spring Allergy Management</div>
+    <div class="insight-text">March–May consistently shows elevated RHR and walking HR across all 7+ years of data. Proactive allergy treatment could blunt this annual pattern that adds ~3 bpm over your summer baseline.</div>
+  </div>
+  <div class="insight-box amber">
+    <div class="insight-title">Monitor HRV Trends</div>
+    <div class="insight-text">The Feb 2026 HRV dip (65 ms, lowest since Mar 2025) may signal accumulated fatigue or stress. Consider a recovery week if HRV remains suppressed. Your best HRV (81 ms, Oct 2024) aligned with strong RHR and VO2 performance.</div>
+  </div>
+</div>
+
+<div class="card">
+  <p class="note"><strong>Methodology:</strong> RHR is the overnight resting heart rate recorded by Apple Watch. All correlations are Pearson r values computed over the full dataset. Detrended correlations remove the linear time-trend from both variables to isolate day-to-day relationships from gradual fitness improvements. HRV data available from Jul 2024 onward. Body mass from the location-merged dataset (lbs). Seasonal averages use calendar month groupings across the full history.</p>
+</div>
+
+<footer>
+  <p>Source: Apple Health · 2,692 daily measurements (Sep 2018 – Mar 2026)</p>
+  <p>Correlational findings. Correlation ≠ causation. Consult healthcare providers before making medical decisions.</p>
+</footer>
+
+</div><!-- end rhr panel -->
 
 
 <!-- ═══════════════════════════════════════════════════════════════ -->
@@ -902,8 +1113,6 @@ Analysis: Pearson correlation, forward stepwise regression (R² = 0.80), decisio
 
 </div><!-- end spo2 panel -->
 
-
-
 <!-- ═══════════════════════════════════════════════════════════════ -->
 <!-- ALL JAVASCRIPT                                                 -->
 <!-- ═══════════════════════════════════════════════════════════════ -->
@@ -915,6 +1124,7 @@ const chartInstances = {};
 let vo2Initialized = false;
 let sleepInitialized = false;
 let spo2Initialized = false;
+let rhrInitialized = false;
 
 document.querySelectorAll('.tab-btn').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -928,6 +1138,7 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
     if (btn.dataset.tab === 'vo2max' && !vo2Initialized) { initVO2Charts(); vo2Initialized = true; }
     if (btn.dataset.tab === 'sleep' && !sleepInitialized) { initSleepCharts(); sleepInitialized = true; }
     if (btn.dataset.tab === 'spo2' && !spo2Initialized) { initSpo2Charts(); initEnvCharts(); buildEnvTables(); spo2Initialized = true; }
+    if (btn.dataset.tab === 'rhr' && !rhrInitialized) { initRhrCharts(); rhrInitialized = true; }
 
     // Resize charts when switching tabs
     Object.values(Chart.instances).forEach(c => c.resize());
@@ -1867,6 +2078,277 @@ function initEnvCharts() {
 }
 
 // ════════════════════════════════════════════════════════════════════
+// RHR DATA
+// ════════════════════════════════════════════════════════════════════
+const rhrTrend = {"2018-09":55.0,"2018-10":58.2,"2018-11":57.2,"2018-12":58.9,"2019-01":62.7,"2019-02":60.7,"2019-03":60.7,"2019-04":55.9,"2019-05":54.1,"2019-06":51.5,"2019-07":52.1,"2019-08":51.1,"2019-09":50.6,"2019-10":50.6,"2019-11":53.5,"2019-12":52.6,"2020-01":54.0,"2020-02":53.7,"2020-03":54.4,"2020-04":54.7,"2020-05":53.2,"2020-06":50.7,"2020-07":49.7,"2020-08":49.4,"2020-09":50.9,"2020-10":54.8,"2020-11":53.0,"2020-12":53.1,"2021-01":51.0,"2021-02":50.7,"2021-03":50.4,"2021-04":54.9,"2021-05":55.7,"2021-06":56.8,"2021-07":54.7,"2021-08":55.7,"2021-09":51.6,"2021-10":50.9,"2021-11":50.8,"2021-12":49.5,"2022-01":50.5,"2022-02":47.8,"2022-03":46.2,"2022-04":45.4,"2022-05":46.0,"2022-06":48.0,"2022-07":47.1,"2022-08":46.7,"2022-09":49.3,"2022-10":51.5,"2022-11":52.6,"2022-12":51.6,"2023-01":49.1,"2023-02":51.9,"2023-03":53.8,"2023-04":50.8,"2023-05":53.6,"2023-06":55.7,"2023-07":54.8,"2023-08":55.1,"2023-09":54.8,"2023-10":53.8,"2023-11":58.7,"2023-12":53.7,"2024-01":55.2,"2024-02":55.0,"2024-03":56.5,"2024-04":55.7,"2024-05":57.1,"2024-06":52.8,"2024-07":53.6,"2024-08":51.8,"2024-09":51.1,"2024-10":51.9,"2024-11":52.6,"2024-12":52.0,"2025-01":52.1,"2025-02":53.4,"2025-03":55.7,"2025-04":55.3,"2025-05":53.7,"2025-06":52.2,"2025-07":50.7,"2025-08":50.0,"2025-09":50.8,"2025-10":52.3,"2025-11":52.1,"2025-12":56.0,"2026-01":55.5,"2026-02":54.5,"2026-03":54.4};
+const walkHrTrend = {"2018-09":102.1,"2018-10":97.2,"2018-11":95.8,"2018-12":101.1,"2019-01":102.3,"2019-02":105.3,"2019-03":105.9,"2019-04":98.1,"2019-05":98.6,"2019-06":98.3,"2019-07":98.3,"2019-08":98.9,"2019-09":98.7,"2019-10":106.8,"2019-11":102.8,"2019-12":103.1,"2020-01":101.3,"2020-02":103.5,"2020-03":106.3,"2020-04":100.1,"2020-05":104.6,"2020-06":102.2,"2020-07":99.8,"2020-08":99.5,"2020-09":96.6,"2020-10":101.3,"2020-11":99.3,"2020-12":104.5,"2021-01":107.7,"2021-02":103.5,"2021-03":100.0,"2021-04":99.2,"2021-05":96.8,"2021-06":98.0,"2021-07":94.4,"2021-08":96.3,"2021-09":98.7,"2021-10":93.1,"2021-11":97.7,"2021-12":101.6,"2022-01":101.5,"2022-02":96.6,"2022-03":90.3,"2022-04":90.0,"2022-05":91.1,"2022-06":92.8,"2022-07":95.7,"2022-08":93.0,"2022-09":89.5,"2022-10":95.8,"2022-11":97.4,"2022-12":88.2,"2023-01":91.0,"2023-02":88.5,"2023-03":92.7,"2023-04":93.2,"2023-05":95.5,"2023-06":98.4,"2023-07":102.9,"2023-08":95.0,"2023-09":95.8,"2023-10":90.9,"2023-11":100.9,"2023-12":90.7,"2024-01":91.9,"2024-02":90.1,"2024-03":94.2,"2024-04":94.4,"2024-05":92.6,"2024-06":89.7,"2024-07":88.1,"2024-08":88.1,"2024-09":90.4,"2024-10":88.6,"2024-11":92.0,"2024-12":90.6,"2025-01":89.4,"2025-02":91.5,"2025-03":97.9,"2025-04":88.8,"2025-05":94.7,"2025-06":92.8,"2025-07":90.1,"2025-08":88.6,"2025-09":87.8,"2025-10":85.9,"2025-11":88.7,"2025-12":91.1,"2026-01":87.8,"2026-02":93.1,"2026-03":90.1};
+const hrvTrend = {"2024-07":78.5,"2024-08":79.3,"2024-09":75.9,"2024-10":81.2,"2024-11":74.7,"2024-12":77.3,"2025-01":72.2,"2025-02":69.7,"2025-03":66.2,"2025-04":67.9,"2025-05":66.1,"2025-06":71.3,"2025-07":72.8,"2025-08":71.4,"2025-09":73.0,"2025-10":76.9,"2025-11":76.9,"2025-12":73.2,"2026-01":78.0,"2026-02":65.1,"2026-03":70.2};
+const bodyMassTrend = {"2024-06":154.1,"2024-07":157.2,"2024-08":157.4,"2024-10":154.5,"2024-11":154.3,"2025-02":150.5,"2025-04":150.7,"2025-05":150.6,"2025-06":148.7,"2025-07":146.4,"2025-08":145.1,"2025-09":144.6,"2025-10":145.8,"2025-11":147.7,"2025-12":148.4,"2026-01":148.1,"2026-02":148.2,"2026-03":147.8};
+
+const rhrFactors = [
+  {name:'Walking HR',rawR:0.314,dtR:0.305,dir:'↑ higher together'},
+  {name:'Body Mass',rawR:0.007,dtR:0.309,dir:'↑ heavier → higher RHR'},
+  {name:'Wrist Temp Dev.',rawR:0.245,dtR:0.237,dir:'↑ warmer wrist → higher'},
+  {name:'Sleep Efficiency',rawR:-0.220,dtR:-0.242,dir:'↓ better sleep → lower'},
+  {name:'HRV',rawR:-0.233,dtR:-0.221,dir:'↓ higher HRV → lower RHR'},
+  {name:'Workout Minutes',rawR:-0.114,dtR:-0.136,dir:'↓ more exercise → lower'},
+  {name:'Bedtime Hour',rawR:-0.099,dtR:-0.113,dir:'↓ later bed → lower'},
+  {name:'Exercise Time',rawR:-0.088,dtR:-0.102,dir:'↓ more exercise → lower'},
+  {name:'Strength Min.',rawR:-0.044,dtR:-0.062,dir:'↓ more strength → lower'},
+  {name:'Cycling Min.',rawR:-0.053,dtR:-0.058,dir:'↓ more cycling → lower'},
+  {name:'Running Min.',rawR:-0.033,dtR:-0.046,dir:'↓ more running → lower'},
+];
+
+const rhrSeasonal = [
+  {m:'Jan',rhr:53.0},{m:'Feb',rhr:53.8},{m:'Mar',rhr:55.3},{m:'Apr',rhr:55.2},
+  {m:'May',rhr:55.4},{m:'Jun',rhr:54.1},{m:'Jul',rhr:52.9},{m:'Aug',rhr:52.5},
+  {m:'Sep',rhr:51.6},{m:'Oct',rhr:52.3},{m:'Nov',rhr:53.9},{m:'Dec',rhr:53.3}
+];
+
+const rhrSeasonWeek = [
+  {period:'Winter',rhr:53.3,std:3.9},{period:'Spring',rhr:55.3,std:4.7},
+  {period:'Summer',rhr:53.1,std:3.8},{period:'Autumn',rhr:52.7,std:4.0},
+  {period:'Monday',rhr:52.9},{period:'Tuesday',rhr:53.5},{period:'Wednesday',rhr:53.2},
+  {period:'Thursday',rhr:53.6},{period:'Friday',rhr:53.3},{period:'Saturday',rhr:54.3},{period:'Sunday',rhr:53.5}
+];
+
+const rhrRecovery = [
+  {label:'No Workout',dt:+0.48,n:871},
+  {label:'1–30 min',dt:+0.33,n:400},
+  {label:'30–60 min',dt:-1.04,n:603},
+  {label:'60–120 min',dt:+0.20,n:619},
+  {label:'120+ min',dt:-0.33,n:151}
+];
+
+// ════════════════════════════════════════════════════════════════════
+// RHR CHARTS
+// ════════════════════════════════════════════════════════════════════
+function buildRhrTables() {
+  // Factor table
+  const ft = document.getElementById('r-factorTable');
+  rhrFactors.forEach(f => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${f.name}</td><td class="num">${f.rawR>0?'+':''}${f.rawR.toFixed(3)}</td><td class="num" style="font-weight:600;color:${f.dtR>0?'#ef4444':'#22c55e'}">${f.dtR>0?'+':''}${f.dtR.toFixed(3)}</td><td style="color:#8b8d97">${f.dir}</td>`;
+    ft.appendChild(tr);
+  });
+  // Season/week table
+  const st = document.getElementById('r-seasonTable');
+  rhrSeasonWeek.forEach(s => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${s.period}</td><td class="num">${s.rhr.toFixed(1)} bpm</td><td class="num">${s.std ? s.std.toFixed(1) : '–'}</td>`;
+    st.appendChild(tr);
+  });
+}
+
+function initRhrCharts() {
+  const cc = {accent:'#6366f1',green:'#22c55e',red:'#ef4444',amber:'#f59e0b',cyan:'#06b6d4',muted:'#8b8d97',border:'#2a2d3a',text:'#e4e4e7'};
+
+  // 1. RHR & Walking HR dual-axis trend
+  const rhrLabels = Object.keys(rhrTrend);
+  new Chart(document.getElementById('r-trendChart'), {
+    type:'line',
+    data:{
+      labels: rhrLabels,
+      datasets:[
+        {label:'Resting HR (bpm)',data:Object.values(rhrTrend),borderColor:cc.red,backgroundColor:'rgba(239,68,68,0.08)',fill:true,tension:0.3,pointRadius:2,pointHoverRadius:6,borderWidth:2.5,yAxisID:'y'},
+        {label:'Walking HR (bpm)',data:rhrLabels.map(l=>walkHrTrend[l]||null),borderColor:cc.amber,borderDash:[5,3],tension:0.3,pointRadius:0,borderWidth:1.8,yAxisID:'y2'}
+      ]
+    },
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{labels:{color:cc.text,font:{size:11}},position:'bottom'},
+        tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+ctx.parsed.y.toFixed(1)+' bpm'}}},
+      scales:{
+        x:{ticks:{color:cc.muted,maxTicksLimit:20,maxRotation:45},grid:{color:cc.border}},
+        y:{position:'left',ticks:{color:cc.red,font:{size:10}},grid:{color:cc.border},title:{display:true,text:'Resting HR (bpm)',color:cc.muted},min:42,max:66},
+        y2:{position:'right',ticks:{color:cc.amber,font:{size:10}},grid:{display:false},title:{display:true,text:'Walking HR (bpm)',color:cc.muted},min:82,max:110}
+      }
+    }
+  });
+
+  // 2. HRV trend
+  const hrvLabels = Object.keys(hrvTrend);
+  new Chart(document.getElementById('r-hrvChart'), {
+    type:'line',
+    data:{
+      labels: hrvLabels,
+      datasets:[
+        {label:'HRV (ms)',data:Object.values(hrvTrend),borderColor:cc.cyan,backgroundColor:'rgba(6,182,212,0.08)',fill:true,tension:0.3,pointRadius:4,pointHoverRadius:6,borderWidth:2.5},
+        {label:'RHR (bpm)',data:hrvLabels.map(l=>rhrTrend[l]||null),borderColor:cc.red,borderDash:[5,3],tension:0.3,pointRadius:0,borderWidth:1.5,yAxisID:'y2'}
+      ]
+    },
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{labels:{color:cc.text,font:{size:11}},position:'bottom'},
+        tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+ctx.parsed.y.toFixed(1)}}},
+      scales:{
+        x:{ticks:{color:cc.muted,maxTicksLimit:15,maxRotation:45},grid:{display:false}},
+        y:{position:'left',ticks:{color:cc.cyan,font:{size:10}},grid:{color:cc.border},title:{display:true,text:'HRV (ms)',color:cc.muted},min:55,max:90},
+        y2:{position:'right',ticks:{color:cc.red,font:{size:10}},grid:{display:false},title:{display:true,text:'RHR (bpm)',color:cc.muted},min:45,max:65,reverse:true}
+      }
+    }
+  });
+
+  // 3. Factor correlations (detrended, horizontal bar)
+  const sortedFactors = [...rhrFactors].sort((a,b) => Math.abs(b.dtR) - Math.abs(a.dtR));
+  new Chart(document.getElementById('r-factorChart'), {
+    type:'bar',
+    data:{labels:sortedFactors.map(f=>f.name),datasets:[{data:sortedFactors.map(f=>f.dtR),backgroundColor:sortedFactors.map(f=>f.dtR>0?'rgba(239,68,68,0.7)':'rgba(34,197,94,0.7)'),borderRadius:4,barThickness:18}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>'r = '+(ctx.parsed.x>0?'+':'')+ctx.parsed.x.toFixed(3)}}},
+      scales:{
+        x:{ticks:{color:cc.muted,callback:v=>(v>0?'+':'')+v.toFixed(1)},grid:{color:cc.border},title:{display:true,text:'Correlation with RHR (detrended)',color:cc.muted},min:-0.3,max:0.35},
+        y:{ticks:{color:cc.text,font:{size:11}},grid:{display:false}}
+      }
+    }
+  });
+
+  // 4. Seasonal pattern (bar)
+  const avgRhr = rhrSeasonal.reduce((s,m)=>s+m.rhr,0)/12;
+  new Chart(document.getElementById('r-seasonChart'), {
+    type:'bar',
+    data:{labels:rhrSeasonal.map(m=>m.m),datasets:[{data:rhrSeasonal.map(m=>m.rhr),backgroundColor:rhrSeasonal.map(m=>m.rhr>avgRhr?'rgba(239,68,68,0.6)':'rgba(34,197,94,0.6)'),borderRadius:4,barThickness:22}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.parsed.y.toFixed(1)+' bpm'}},
+        annotation:false},
+      scales:{
+        x:{ticks:{color:cc.muted,font:{size:11}},grid:{display:false}},
+        y:{ticks:{color:cc.muted,callback:v=>v+' bpm'},grid:{color:cc.border},title:{display:true,text:'Avg RHR (bpm)',color:cc.muted},min:50,max:57}
+      }
+    },
+    plugins:[{
+      id:'rhrAvgLine',
+      afterDatasetsDraw(chart) {
+        const {ctx,chartArea:{left,right},scales:{y}} = chart;
+        const py = y.getPixelForValue(avgRhr);
+        ctx.save();
+        ctx.strokeStyle = cc.muted;
+        ctx.lineWidth = 1;
+        ctx.setLineDash([4,4]);
+        ctx.beginPath(); ctx.moveTo(left,py); ctx.lineTo(right,py); ctx.stroke();
+        ctx.fillStyle = cc.muted;
+        ctx.font = '10px system-ui,sans-serif';
+        ctx.textAlign = 'right';
+        ctx.fillText('avg '+avgRhr.toFixed(1), right-4, py-4);
+        ctx.restore();
+      }
+    }]
+  });
+
+  // 5. Workout type impact (horizontal bar)
+  const wkTypeData = [
+    {type:'HIIT', delta:-3.68, n:165},
+    {type:'Swimming', delta:-2.07, n:20},
+    {type:'Running', delta:-1.12, n:177},
+    {type:'Cycling', delta:-0.69, n:295},
+    {type:'Func. Str.', delta:-0.64, n:125},
+    {type:'Yoga', delta:-0.62, n:679},
+    {type:'Walking', delta:-0.39, n:867},
+    {type:'Strength', delta:-0.26, n:87},
+  ];
+  new Chart(document.getElementById('r-workoutTypeChart'), {
+    type:'bar',
+    data:{labels:wkTypeData.map(d=>d.type),datasets:[{data:wkTypeData.map(d=>d.delta),backgroundColor:wkTypeData.map(d=>{const a=Math.abs(d.delta);return a>1.5?'rgba(34,197,94,0.7)':a>1?'rgba(6,182,212,0.6)':'rgba(99,102,241,0.5)'}),borderRadius:4,barThickness:18}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.parsed.x>0?'+':''}${ctx.parsed.x.toFixed(2)} bpm (n=${wkTypeData[ctx.dataIndex].n})`}}},
+      scales:{
+        x:{ticks:{color:cc.muted,callback:v=>v.toFixed(1)+' bpm'},grid:{color:cc.border},title:{display:true,text:'Δ Next-Day RHR vs Rest Days (bpm)',color:cc.muted},min:-4.2,max:0},
+        y:{ticks:{color:cc.text,font:{size:12}},grid:{display:false}}
+      }
+    }
+  });
+
+  // 6. Workout timing impact
+  const timingData = [
+    {time:'Morning', delta:-0.93, n:961},
+    {time:'Afternoon', delta:-0.77, n:520},
+    {time:'Evening', delta:-0.38, n:865},
+  ];
+  new Chart(document.getElementById('r-timingChart'), {
+    type:'bar',
+    data:{labels:timingData.map(d=>d.time),datasets:[{data:timingData.map(d=>d.delta),backgroundColor:[cc.green+'aa',cc.cyan+'aa',cc.accent+'aa'],borderRadius:4,barThickness:36}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.parsed.y.toFixed(2)} bpm (n=${timingData[ctx.dataIndex].n})`}}},
+      scales:{
+        x:{ticks:{color:cc.muted,font:{size:12}},grid:{display:false}},
+        y:{ticks:{color:cc.muted,callback:v=>v.toFixed(1)+' bpm'},grid:{color:cc.border},title:{display:true,text:'Δ Next-Day RHR vs Rest Days (bpm)',color:cc.muted},min:-1.2,max:0}
+      }
+    }
+  });
+
+  // 7. Workout count per day
+  const countData = [
+    {label:'0 (Rest)',dt:+0.48,n:871},
+    {label:'1 Session',dt:-0.29,n:900},
+    {label:'2 Sessions',dt:-0.20,n:502},
+    {label:'3+ Sessions',dt:-0.17,n:371},
+  ];
+  new Chart(document.getElementById('r-countChart'), {
+    type:'bar',
+    data:{labels:countData.map(d=>d.label),datasets:[{data:countData.map(d=>d.dt),backgroundColor:countData.map(d=>d.dt>0?'rgba(139,141,151,0.5)':cc.green+'88'),borderRadius:4,barThickness:32}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.parsed.y>0?'+':''}${ctx.parsed.y.toFixed(2)} bpm (n=${countData[ctx.dataIndex].n})`}}},
+      scales:{
+        x:{ticks:{color:cc.muted,font:{size:11}},grid:{display:false}},
+        y:{ticks:{color:cc.muted,callback:v=>(v>0?'+':'')+v.toFixed(1)+' bpm'},grid:{color:cc.border},title:{display:true,text:'Detrended RHR (bpm)',color:cc.muted}}
+      }
+    }
+  });
+
+  // 8. Active energy buckets
+  const energyData = [
+    {label:'<500 cal',delta:-0.26,n:331},
+    {label:'500–750 cal',delta:-0.86,n:793},
+    {label:'750–1000 cal',delta:-0.75,n:486},
+    {label:'1000+ cal',delta:-0.84,n:163},
+  ];
+  new Chart(document.getElementById('r-energyChart'), {
+    type:'bar',
+    data:{labels:energyData.map(d=>d.label),datasets:[{data:energyData.map(d=>d.delta),backgroundColor:energyData.map(d=>{const a=Math.abs(d.delta);return a>0.8?cc.green+'aa':a>0.5?cc.cyan+'88':cc.accent+'66'}),borderRadius:4,barThickness:32}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.parsed.y.toFixed(2)} bpm (n=${energyData[ctx.dataIndex].n})`}}},
+      scales:{
+        x:{ticks:{color:cc.muted,font:{size:11}},grid:{display:false}},
+        y:{ticks:{color:cc.muted,callback:v=>v.toFixed(1)+' bpm'},grid:{color:cc.border},title:{display:true,text:'Δ Next-Day RHR vs Rest Days (bpm)',color:cc.muted},min:-1.2,max:0}
+      }
+    }
+  });
+
+  // 9. Next-day RHR by workout duration (bar)
+  new Chart(document.getElementById('r-recoveryChart'), {
+    type:'bar',
+    data:{labels:rhrRecovery.map(r=>r.label),datasets:[{data:rhrRecovery.map(r=>r.dt),backgroundColor:rhrRecovery.map(r=>r.dt>0?'rgba(139,141,151,0.5)':cc.green+'88'),borderRadius:4,barThickness:28}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.parsed.y>0?'+':''}${ctx.parsed.y.toFixed(2)} bpm (n=${rhrRecovery[ctx.dataIndex].n})`}}},
+      scales:{
+        x:{ticks:{color:cc.muted,font:{size:11}},grid:{display:false}},
+        y:{ticks:{color:cc.muted,callback:v=>(v>0?'+':'')+v.toFixed(1)+' bpm'},grid:{color:cc.border},title:{display:true,text:'Δ Next-Day RHR vs Trend (bpm)',color:cc.muted}}
+      }
+    }
+  });
+
+  // 6. Body mass & RHR dual axis
+  const bmLabels = Object.keys(bodyMassTrend);
+  new Chart(document.getElementById('r-bodyMassChart'), {
+    type:'line',
+    data:{
+      labels: bmLabels,
+      datasets:[
+        {label:'Body Mass (lbs)',data:Object.values(bodyMassTrend),borderColor:cc.accent,backgroundColor:'rgba(99,102,241,0.08)',fill:true,tension:0.3,pointRadius:4,borderWidth:2.5,yAxisID:'y'},
+        {label:'RHR (bpm)',data:bmLabels.map(l=>rhrTrend[l]||null),borderColor:cc.red,borderDash:[5,3],tension:0.3,pointRadius:3,borderWidth:2,yAxisID:'y2'}
+      ]
+    },
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{labels:{color:cc.text,font:{size:10}},position:'bottom'},
+        tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+ctx.parsed.y.toFixed(1)}}},
+      scales:{
+        x:{ticks:{color:cc.muted,font:{size:10},maxRotation:45},grid:{display:false}},
+        y:{position:'left',ticks:{color:cc.accent,font:{size:10}},grid:{color:cc.border},title:{display:true,text:'lbs',color:cc.muted}},
+        y2:{position:'right',ticks:{color:cc.red,font:{size:10}},grid:{display:false},title:{display:true,text:'bpm',color:cc.muted}}
+      }
+    }
+  });
+}
+
+// ════════════════════════════════════════════════════════════════════
 // OVERVIEW CHARTS
 // ════════════════════════════════════════════════════════════════════
 function initOverviewCharts() {
@@ -1891,6 +2373,15 @@ function initOverviewCharts() {
     options:miniOpts('SpO₂ Min %')
   });
 
+  // RHR mini trend
+  const rhrKeys = Object.keys(rhrTrend);
+  const rhrVals = Object.values(rhrTrend);
+  new Chart(document.getElementById('ov-rhrTrend'), {
+    type:'line',
+    data:{labels:rhrKeys, datasets:[{data:rhrVals,borderColor:cc.red,backgroundColor:'rgba(239,68,68,0.08)',fill:true,tension:0.3,pointRadius:0,borderWidth:2}]},
+    options:miniOpts('bpm')
+  });
+
   // Sleep monthly mini (hardcoded — monthly averages from seasonal chart)
   new Chart(document.getElementById('ov-sleepTrend'), {
     type:'bar',
@@ -1911,6 +2402,7 @@ initOverviewCharts();
 // Non-critical tables: catch errors so they never block chart rendering
 try { buildSpo2Tables(); } catch(e) { console.error('buildSpo2Tables:', e); }
 try { buildDemoTables(); } catch(e) { console.error('buildDemoTables:', e); }
+try { buildRhrTables(); } catch(e) { console.error('buildRhrTables:', e); }
 
 // Force chart resize after browser completes layout
 window.addEventListener('load', () => {
