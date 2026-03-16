@@ -1218,7 +1218,7 @@ function reinitAllCharts() {
     if (t === 'vo2max') { initVO2Charts(); vo2Initialized = true; }
     if (t === 'rhr') { initRhrCharts(); rhrInitialized = true; }
     if (t === 'sleep') { initSleepCharts(); sleepInitialized = true; }
-    if (t === 'spo2') { initSpo2Charts(); initEnvCharts(); spo2Initialized = true; }
+    if (t === 'spo2') { initSpo2Charts(); initEnvCharts(); buildEnvTables(); spo2Initialized = true; }
   }
 }
 document.getElementById('themeToggle').addEventListener('click', () => {
@@ -1728,6 +1728,7 @@ function buildSpo2Tables() {
 
   // Correlation table
   const ct = document.getElementById('o-correlationTable');
+  ct.innerHTML = '';
   spo2CorrelationFactors.forEach((f,idx) => {
     const isTop = Math.abs(f.r) >= 0.25;
     const barPct = (Math.abs(f.r)/0.32)*100;
@@ -2015,6 +2016,7 @@ function buildEnvTables() {
 
   // Environmental factor table
   const ft = document.getElementById('e-envFactorTable').querySelector('tbody');
+  ft.innerHTML = '';
   envFactors.forEach((f,idx) => {
     const isTop = f.detrendR !== null && Math.abs(f.detrendR) >= 0.15;
     const tr = document.createElement('tr');
@@ -2033,6 +2035,7 @@ function buildEnvTables() {
 
   // Location table
   const lt = document.getElementById('e-locationTable').querySelector('tbody');
+  lt.innerHTML = '';
   envLocationData.forEach(loc => {
     const spo2Color = loc.spo2Avg >= 96.5 ? cc.green : loc.spo2Avg >= 96.0 ? cc.amber : cc.red;
     const aqiColor = loc.aqi >= 60 ? cc.red : loc.aqi >= 45 ? cc.amber : cc.muted;
