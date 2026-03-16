@@ -11,6 +11,11 @@
     --text: #e4e4e7; --muted: #8b8d97; --accent: #6366f1;
     --green: #22c55e; --red: #ef4444; --amber: #f59e0b; --cyan: #06b6d4;
   }
+  html.light {
+    --bg: #f5f5f7; --card: #ffffff; --border: #e2e2e8;
+    --text: #1a1a2e; --muted: #64647a; --accent: #4f46e5;
+    --green: #16a34a; --red: #dc2626; --amber: #d97706; --cyan: #0891b2;
+  }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); padding: 0; margin: 0; }
 
@@ -78,10 +83,77 @@
   .note { font-size: 12px; color: var(--muted); font-style: italic; margin-top: 8px; line-height: 1.5; }
   footer { text-align: center; margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--border); }
   footer p { font-size: 12px; color: var(--muted); line-height: 1.6; margin-bottom: 8px; }
+  /* ═══ LIGHT MODE ADJUSTMENTS ═══ */
+  html.light .insight-box.positive { background: rgba(22,163,74,0.08); }
+  html.light .insight-box.negative { background: rgba(220,38,38,0.08); }
+  html.light .insight-box.neutral { background: rgba(79,70,229,0.08); }
+  html.light .insight-box.amber { background: rgba(217,119,6,0.08); }
+  html.light .zone-bar div { color: white; }
+
+  /* ═══ THEME TOGGLE ═══ */
+  .theme-toggle { margin-left: auto; background: none; border: 1px solid var(--border); color: var(--muted); width: 36px; height: 36px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: color 0.2s, border-color 0.2s; flex-shrink: 0; }
+  .theme-toggle:hover { color: var(--text); border-color: var(--muted); }
+  .theme-toggle svg { width: 18px; height: 18px; }
+
+  /* ═══ TABLET (≤900px) ═══ */
   @media (max-width: 900px) {
     .grid-4 { grid-template-columns: repeat(2, 1fr); }
     .grid-2, .grid-3 { grid-template-columns: 1fr; }
     .site-title { display: none; }
+    .site-header { padding: 0 12px; }
+    .site-header-inner { gap: 8px; }
+    .tab-nav { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+    .tab-nav::-webkit-scrollbar { display: none; }
+    .tab-btn { padding: 0 12px; white-space: nowrap; font-size: 13px; }
+    .tab-panel { padding: 16px; }
+  }
+
+  /* ═══ MOBILE (≤600px) ═══ */
+  @media (max-width: 600px) {
+    .grid-4 { grid-template-columns: 1fr 1fr; gap: 12px; }
+    .grid-2, .grid-3 { grid-template-columns: 1fr; gap: 12px; }
+    .grid { gap: 12px; margin-bottom: 16px; }
+    .tab-panel { padding: 12px; }
+    .tab-btn { padding: 0 10px; font-size: 12px; }
+    .tab-icon { width: 16px; height: 16px; margin-right: 5px; }
+    .site-header-inner { height: 48px; }
+    h1 { font-size: 22px; }
+    h2 { font-size: 17px; margin-bottom: 12px; }
+    h3 { font-size: 14px; margin-bottom: 8px; }
+    .subtitle { font-size: 12px; margin-bottom: 20px; }
+    .card { padding: 14px; border-radius: 10px; }
+    .stat-value { font-size: 26px; }
+    .stat-label { font-size: 11px; }
+    .stat-sub { font-size: 12px; }
+    .chart-container { height: 260px; }
+    .chart-container-tall { height: 380px; }
+    .chart-container-sm { height: 220px; }
+    .insight-box { padding: 12px; }
+    .insight-title { font-size: 13px; }
+    .insight-text { font-size: 12px; }
+    .section-header { margin: 24px 0 12px; }
+    table.data { font-size: 12px; }
+    table.data th, table.data td { padding: 8px 8px; }
+    .card:has(table.data) { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    table.data { min-width: 480px; }
+    .bar-cell { width: 80px; }
+    .legend-row { gap: 10px; }
+    .legend-item { font-size: 11px; }
+    footer p { font-size: 11px; }
+    .theme-toggle { width: 32px; height: 32px; }
+    .theme-toggle svg { width: 16px; height: 16px; }
+  }
+
+  /* ═══ SMALL MOBILE (≤400px) ═══ */
+  @media (max-width: 400px) {
+    .grid-4 { grid-template-columns: 1fr; }
+    .tab-panel { padding: 8px; }
+    .card { padding: 12px; border-radius: 8px; }
+    .stat-value { font-size: 22px; }
+    h1 { font-size: 20px; }
+    .chart-container { height: 220px; }
+    .chart-container-tall { height: 320px; }
+    .chart-container-sm { height: 200px; }
   }
 </style>
 </head>
@@ -107,7 +179,7 @@
         Resting HR
       </button>
       <button class="tab-btn" data-tab="sleep">
-        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 18v-1a5 5 0 0 1 5-5h10a5 5 0 0 1 5 5v1"/><path d="M2 18h20"/><path d="M4 12V8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4"/></svg>
         Sleep
       </button>
       <button class="tab-btn" data-tab="spo2">
@@ -115,6 +187,9 @@
         Blood Oxygen
       </button>
     </nav>
+    <button class="theme-toggle" id="themeToggle" title="Toggle light/dark mode">
+      <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
   </div>
 </header>
 
@@ -1118,9 +1193,49 @@ Analysis: Pearson correlation, forward stepwise regression (R² = 0.80), decisio
 <!-- ═══════════════════════════════════════════════════════════════ -->
 <script>
 // ════════════════════════════════════════════════════════════════════
+// THEME
+// ════════════════════════════════════════════════════════════════════
+function isLight() { return document.documentElement.classList.contains('light'); }
+function getCC() {
+  if (isLight()) return {accent:'#4f46e5',green:'#16a34a',red:'#dc2626',amber:'#d97706',cyan:'#0891b2',muted:'#64647a',border:'#e2e2e8',text:'#1a1a2e'};
+  return {accent:'#6366f1',green:'#22c55e',red:'#ef4444',amber:'#f59e0b',cyan:'#06b6d4',muted:'#8b8d97',border:'#2a2d3a',text:'#e4e4e7'};
+}
+function updateThemeIcon() {
+  document.getElementById('themeIcon').innerHTML = isLight()
+    ? '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>'
+    : '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+}
+function destroyAllCharts() {
+  Object.values(Chart.instances).forEach(c => { try { c.destroy(); } catch(e) {} });
+}
+function reinitAllCharts() {
+  destroyAllCharts();
+  vo2Initialized = false; sleepInitialized = false; spo2Initialized = false; rhrInitialized = false;
+  initOverviewCharts();
+  const active = document.querySelector('.tab-btn.active');
+  if (active) {
+    const t = active.dataset.tab;
+    if (t === 'vo2max') { initVO2Charts(); vo2Initialized = true; }
+    if (t === 'rhr') { initRhrCharts(); rhrInitialized = true; }
+    if (t === 'sleep') { initSleepCharts(); sleepInitialized = true; }
+    if (t === 'spo2') { initSpo2Charts(); initEnvCharts(); spo2Initialized = true; }
+  }
+}
+document.getElementById('themeToggle').addEventListener('click', () => {
+  document.documentElement.classList.toggle('light');
+  updateThemeIcon();
+  localStorage.setItem('theme', isLight() ? 'light' : 'dark');
+  reinitAllCharts();
+});
+// Restore saved preference, or honour OS setting
+const savedTheme = localStorage.getItem('theme');
+if (savedTheme === 'light' || (!savedTheme && window.matchMedia('(prefers-color-scheme: light)').matches)) {
+  document.documentElement.classList.add('light'); updateThemeIcon();
+}
+
+// ════════════════════════════════════════════════════════════════════
 // TAB SWITCHING
 // ════════════════════════════════════════════════════════════════════
-const chartInstances = {};
 let vo2Initialized = false;
 let sleepInitialized = false;
 let spo2Initialized = false;
@@ -1255,6 +1370,7 @@ function buildVO2Tables() {
 // VO2 MAX CHARTS
 // ════════════════════════════════════════════════════════════════════
 function initVO2Charts() {
+  const cc = getCC();
   // Trend with VO2 Max category boundaries (Apple Health / FRIEND registry, males)
   // Age 20-29 until Oct 2017, Age 30-39 from Oct 2017 onward (DOB: 1987-10-15)
   const trendLabels = Object.keys(trendData);
@@ -1275,9 +1391,9 @@ function initVO2Charts() {
       ]
     },
     options:{responsive:true,maintainAspectRatio:false,plugins:{
-      legend:{labels:{filter:item=>!item.text.startsWith('_'),color:'#e4e4e7',font:{size:11}}},
+      legend:{labels:{filter:item=>!item.text.startsWith('_'),color:cc.text,font:{size:11}}},
       tooltip:{filter:item=>!item.dataset.label.startsWith('_'),callbacks:{label:ctx=>`VO2 Max: ${ctx.parsed.y.toFixed(1)} mL/min/kg`}}
-    },scales:{x:{ticks:{color:'#8b8d97',maxTicksLimit:20,maxRotation:45},grid:{color:'#2a2d3a'}},y:{ticks:{color:'#8b8d97'},grid:{color:'#2a2d3a'},title:{display:true,text:'mL/min/kg',color:'#8b8d97'},min:30,max:50}}},
+    },scales:{x:{ticks:{color:cc.muted,maxTicksLimit:20,maxRotation:45},grid:{color:cc.border}},y:{ticks:{color:cc.muted},grid:{color:cc.border},title:{display:true,text:'mL/min/kg',color:cc.muted},min:30,max:50}}},
     plugins:[{
       id:'vo2Bands',
       beforeDatasetsDraw(chart) {
@@ -1326,7 +1442,7 @@ function initVO2Charts() {
         label,data:zonePeriods.map(p=>Math.round(p.mpw*p.z[i]/100)),backgroundColor:zColors[i],borderRadius:i===4?{topLeft:4,topRight:4}:0
       }))
     },
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e4e4e7',font:{size:11}},position:'bottom'},tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.parsed.y} min/week`}}},scales:{x:{stacked:true,ticks:{color:'#8b8d97',font:{size:11}},grid:{display:false}},y:{stacked:true,ticks:{color:'#8b8d97'},grid:{color:'#2a2d3a'},title:{display:true,text:'Minutes/Week',color:'#8b8d97'}}}}
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:cc.text,font:{size:11}},position:'bottom'},tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.parsed.y} min/week`}}},scales:{x:{stacked:true,ticks:{color:cc.muted,font:{size:11}},grid:{display:false}},y:{stacked:true,ticks:{color:cc.muted},grid:{color:cc.border},title:{display:true,text:'Minutes/Week',color:cc.muted}}}}
   });
 
   // Zone correlation
@@ -1339,21 +1455,21 @@ function initVO2Charts() {
         {label:'30-day rolling',data:zoneCorrs.map(z=>z.r30),backgroundColor:'rgba(6,182,212,0.7)',borderRadius:4,barPercentage:0.7}
       ]
     },
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e4e4e7',font:{size:11}},position:'bottom'},tooltip:{callbacks:{label:ctx=>`r = +${ctx.parsed.y.toFixed(3)}`}}},scales:{x:{ticks:{color:'#8b8d97',font:{size:11}},grid:{display:false}},y:{ticks:{color:'#8b8d97',callback:v=>'+'+v.toFixed(1)},grid:{color:'#2a2d3a'},min:0,max:0.8,title:{display:true,text:'Correlation (r)',color:'#8b8d97'}}}}
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:cc.text,font:{size:11}},position:'bottom'},tooltip:{callbacks:{label:ctx=>`r = +${ctx.parsed.y.toFixed(3)}`}}},scales:{x:{ticks:{color:cc.muted,font:{size:11}},grid:{display:false}},y:{ticks:{color:cc.muted,callback:v=>'+'+v.toFixed(1)},grid:{color:cc.border},min:0,max:0.8,title:{display:true,text:'Correlation (r)',color:cc.muted}}}}
   });
 
   // Factor chart
   new Chart(document.getElementById('v-factorChart'), {
     type:'bar',
-    data:{labels:factors.map(f=>f.name),datasets:[{data:factors.map(f=>f.corr),backgroundColor:factors.map(f=>f.corr>0?'#22c55e':'#ef4444'),borderRadius:4,barThickness:22}]},
-    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`Correlation: ${ctx.parsed.x>0?'+':''}${ctx.parsed.x.toFixed(3)}`}}},scales:{x:{ticks:{color:'#8b8d97',callback:v=>(v>0?'+':'')+v.toFixed(1)},grid:{color:'#2a2d3a'},title:{display:true,text:'Correlation with VO2 Max',color:'#8b8d97'},min:-0.7,max:0.8},y:{ticks:{color:'#e4e4e7',font:{size:12}},grid:{display:false}}}}
+    data:{labels:factors.map(f=>f.name),datasets:[{data:factors.map(f=>f.corr),backgroundColor:factors.map(f=>f.corr>0?cc.green:cc.red),borderRadius:4,barThickness:22}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`Correlation: ${ctx.parsed.x>0?'+':''}${ctx.parsed.x.toFixed(3)}`}}},scales:{x:{ticks:{color:cc.muted,callback:v=>(v>0?'+':'')+v.toFixed(1)},grid:{color:cc.border},title:{display:true,text:'Correlation with VO2 Max',color:cc.muted},min:-0.7,max:0.8},y:{ticks:{color:cc.text,font:{size:13},padding:4},grid:{display:false}}}}
   });
 
   // Workout pie
   new Chart(document.getElementById('v-workoutPie'), {
     type:'doughnut',
     data:{labels:['Walking','Yoga','Cycling','Running','HIIT','Func. Strength','Trad. Strength','Other','Hiking','Elliptical'],datasets:[{data:[1318,925,410,227,193,176,106,105,47,43],backgroundColor:['#6366f1','#a78bfa','#06b6d4','#22c55e','#f59e0b','#ec4899','#ef4444','#8b8d97','#14b8a6','#f97316'],borderWidth:0}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#e4e4e7',font:{size:11},padding:8,boxWidth:12}}}}
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:cc.text,font:{size:11},padding:8,boxWidth:12}}}}
   });
 
   // Walking HR & Recovery sparklines
@@ -1365,7 +1481,7 @@ function initVO2Charts() {
       {label:'Walking HR (bpm)',data:[92.4,90.1,87.0,86.2,88.5],borderColor:'#ef4444',backgroundColor:'rgba(239,68,68,0.1)',fill:true,tension:0.3,pointRadius:5,borderWidth:2.5},
       {label:'VO2 Max',data:[39.8,40.7,45.6,45.0,43.3],borderColor:'#6366f1',borderDash:[5,5],tension:0.3,pointRadius:4,borderWidth:2,yAxisID:'y2'}
     ]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e4e4e7',font:{size:10}},position:'bottom'}},scales:{x:{ticks:{color:'#8b8d97',font:{size:10}},grid:{display:false}},y:{ticks:{color:'#ef4444',font:{size:10}},grid:{color:'#2a2d3a'},title:{display:true,text:'bpm',color:'#8b8d97'},reverse:true},y2:{position:'right',ticks:{color:'#6366f1',font:{size:10}},grid:{display:false},title:{display:true,text:'VO2',color:'#8b8d97'}}}}
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:cc.text,font:{size:10}},position:'bottom'}},scales:{x:{ticks:{color:cc.muted,font:{size:10}},grid:{display:false}},y:{ticks:{color:cc.red,font:{size:10}},grid:{color:cc.border},title:{display:true,text:'bpm',color:cc.muted},reverse:true},y2:{position:'right',ticks:{color:cc.accent,font:{size:10}},grid:{display:false},title:{display:true,text:'VO2',color:cc.muted}}}}
   });
 
   new Chart(document.getElementById('v-hrRecoveryChart'), {
@@ -1374,7 +1490,7 @@ function initVO2Charts() {
       {label:'HR Recovery 1min (bpm)',data:[33.2,35.5,40.7,39.8,37.2],borderColor:'#22c55e',backgroundColor:'rgba(34,197,94,0.1)',fill:true,tension:0.3,pointRadius:5,borderWidth:2.5},
       {label:'VO2 Max',data:[39.8,40.7,45.6,45.0,43.3],borderColor:'#6366f1',borderDash:[5,5],tension:0.3,pointRadius:4,borderWidth:2,yAxisID:'y2'}
     ]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#e4e4e7',font:{size:10}},position:'bottom'}},scales:{x:{ticks:{color:'#8b8d97',font:{size:10}},grid:{display:false}},y:{ticks:{color:'#22c55e',font:{size:10}},grid:{color:'#2a2d3a'},title:{display:true,text:'bpm',color:'#8b8d97'}},y2:{position:'right',ticks:{color:'#6366f1',font:{size:10}},grid:{display:false},title:{display:true,text:'VO2',color:'#8b8d97'}}}}
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:cc.text,font:{size:10}},position:'bottom'}},scales:{x:{ticks:{color:cc.muted,font:{size:10}},grid:{display:false}},y:{ticks:{color:cc.green,font:{size:10}},grid:{color:cc.border},title:{display:true,text:'bpm',color:cc.muted}},y2:{position:'right',ticks:{color:cc.accent,font:{size:10}},grid:{display:false},title:{display:true,text:'VO2',color:cc.muted}}}}
   });
 }
 
@@ -1438,7 +1554,7 @@ const regressionSteps = [
 // SLEEP TABLE BUILDERS
 // ════════════════════════════════════════════════════════════════════
 function buildSleepTables() {
-  const cc = {accent:'#6366f1',green:'#22c55e',red:'#ef4444',amber:'#f59e0b',cyan:'#06b6d4',muted:'#8b8d97',border:'#2a2d3a'};
+  const cc = getCC();
 
   // Efficiency table
   const et = document.getElementById('s-efficiencyTable').querySelector('tbody');
@@ -1491,12 +1607,12 @@ function buildSleepTables() {
 // SLEEP CHARTS
 // ════════════════════════════════════════════════════════════════════
 function initSleepCharts() {
-  const cc = {accent:'#6366f1',green:'#22c55e',red:'#ef4444',amber:'#f59e0b',cyan:'#06b6d4',muted:'#8b8d97',border:'#2a2d3a'};
+  const cc = getCC();
 
   // Stage doughnut
   new Chart(document.getElementById('s-stageChart'), {
     type:'doughnut',
-    data:{labels:['Light Sleep','Deep Sleep','REM Sleep'],datasets:[{data:[4.02,0.97,1.83],backgroundColor:[cc.cyan,cc.green,cc.accent],borderColor:'#1a1d27',borderWidth:2}]},
+    data:{labels:['Light Sleep','Deep Sleep','REM Sleep'],datasets:[{data:[4.02,0.97,1.83],backgroundColor:[cc.cyan,cc.green,cc.accent],borderColor:isLight()?'#ffffff':'#1a1d27',borderWidth:2}]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:cc.muted,font:{size:12},padding:12}}}}
   });
 
@@ -1608,7 +1724,7 @@ const spo2TrendData = {
 // SPO2 TABLE BUILDERS
 // ════════════════════════════════════════════════════════════════════
 function buildSpo2Tables() {
-  const cc = {accent:'#6366f1',green:'#22c55e',red:'#ef4444',amber:'#f59e0b',cyan:'#06b6d4',muted:'#8b8d97',border:'#2a2d3a'};
+  const cc = getCC();
 
   // Correlation table
   const ct = document.getElementById('o-correlationTable');
@@ -1633,7 +1749,7 @@ function buildSpo2Tables() {
 // SPO2 CHARTS
 // ════════════════════════════════════════════════════════════════════
 function initSpo2Charts() {
-  const cc = {accent:'#6366f1',green:'#22c55e',red:'#ef4444',amber:'#f59e0b',cyan:'#06b6d4',muted:'#8b8d97',border:'#2a2d3a'};
+  const cc = getCC();
 
   // Seasonal chart
   new Chart(document.getElementById('o-seasonalChart'), {
@@ -1895,7 +2011,7 @@ const envTimeline = {
 // ENVIRONMENT TABLE BUILDERS
 // ════════════════════════════════════════════════════════════════════
 function buildEnvTables() {
-  const cc = {accent:'#6366f1',green:'#22c55e',red:'#ef4444',amber:'#f59e0b',cyan:'#06b6d4',muted:'#8b8d97',border:'#2a2d3a'};
+  const cc = getCC();
 
   // Environmental factor table
   const ft = document.getElementById('e-envFactorTable').querySelector('tbody');
@@ -1938,7 +2054,7 @@ function buildEnvTables() {
 // ENVIRONMENT CHARTS
 // ════════════════════════════════════════════════════════════════════
 function initEnvCharts() {
-  const cc = {accent:'#6366f1',green:'#22c55e',red:'#ef4444',amber:'#f59e0b',cyan:'#06b6d4',muted:'#8b8d97',border:'#2a2d3a'};
+  const cc = getCC();
 
   // Location bar chart (horizontal)
   const locData = envLocationData.filter(l => l.n >= 5);
@@ -2141,7 +2257,7 @@ function buildRhrTables() {
 }
 
 function initRhrCharts() {
-  const cc = {accent:'#6366f1',green:'#22c55e',red:'#ef4444',amber:'#f59e0b',cyan:'#06b6d4',muted:'#8b8d97',border:'#2a2d3a',text:'#e4e4e7'};
+  const cc = getCC();
 
   // 1. RHR & Walking HR dual-axis trend
   const rhrLabels = Object.keys(rhrTrend);
@@ -2352,7 +2468,7 @@ function initRhrCharts() {
 // OVERVIEW CHARTS
 // ════════════════════════════════════════════════════════════════════
 function initOverviewCharts() {
-  const cc = {accent:'#6366f1',green:'#22c55e',red:'#ef4444',amber:'#f59e0b',cyan:'#06b6d4',muted:'#8b8d97',border:'#2a2d3a'};
+  const cc = getCC();
   const miniOpts = (yLabel) => ({responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{grid:{color:cc.border},ticks:{color:cc.muted,font:{size:10}},title:{display:true,text:yLabel,color:cc.muted,font:{size:11}}},x:{grid:{display:false},ticks:{color:cc.muted,font:{size:9},maxTicksLimit:12,maxRotation:45}}}});
 
   // VO2 mini trend (reuse trendData)
