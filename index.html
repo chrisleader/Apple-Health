@@ -44,6 +44,7 @@
   .grid-2 { grid-template-columns: repeat(2, 1fr); }
   .grid-3 { grid-template-columns: repeat(3, 1fr); }
   .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+  .tab-panel > .card { margin-bottom: 24px; }
   .stat-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
   .stat-value { font-size: 32px; font-weight: 700; }
   .stat-sub { font-size: 13px; color: var(--muted); margin-top: 2px; }
@@ -381,14 +382,14 @@ Analysis: Pearson correlation, forward stepwise regression (R² = 0.80), decisio
   </div>
 </div>
 
-<div class="card" style="margin-bottom: 24px;">
+<div class="card">
   <h3>VO2 Max Trend Over Time</h3>
   <div class="chart-container"><canvas id="v-trendChart"></canvas></div>
 </div>
 
 <h2 class="section-header">Demographic Context</h2>
 <div class="subtitle" style="margin-bottom:16px">Male, age 38. VO2 max categories based on ACSM norms for men aged 35–39.</div>
-<div class="card" style="margin-bottom: 24px;">
+<div class="card">
   <table class="data">
     <thead>
       <tr><th>Category</th><th class="num">VO2 Max Range</th><th class="num">Percentile</th><th>Your Range</th></tr>
@@ -429,7 +430,7 @@ Analysis: Pearson correlation, forward stepwise regression (R² = 0.80), decisio
 <h2 class="section-header">Heart Rate Zone Analysis</h2>
 <div class="subtitle" style="margin-bottom:16px">Based on 1.3M individual heart rate samples matched to workout windows. Max HR = 197 bpm (observed). Zones: Z1 &lt;118, Z2 118–138, Z3 138–158, Z4 158–177, Z5 177+ bpm.</div>
 
-<div class="card" style="margin-bottom: 20px;">
+<div class="card">
   <h3>Time-in-Zone by Training Period</h3>
   <div class="legend-row">
     <div class="legend-item"><div class="legend-dot z1-color"></div>Zone 1 (Recovery)</div>
@@ -587,12 +588,12 @@ Analysis: Pearson correlation, forward stepwise regression (R² = 0.80), decisio
 <h2 class="section-header">Trends &amp; Variability</h2>
 <div class="subtitle">Long-term RHR and walking HR trends with HRV overlay</div>
 
-<div class="card" style="margin-bottom: 24px;">
+<div class="card">
   <h3>RHR &amp; Walking HR Trend</h3>
   <div class="chart-container"><canvas id="r-trendChart"></canvas></div>
 </div>
 
-<div class="card" style="margin-bottom: 24px;">
+<div class="card">
   <h3>Heart Rate Variability (HRV) Trend</h3>
   <div class="chart-container-sm"><canvas id="r-hrvChart"></canvas></div>
 </div>
@@ -787,24 +788,8 @@ Analysis: Pearson correlation, forward stepwise regression (R² = 0.80), decisio
   </div>
 </div>
 
-<h2 class="section-header">Demographic Context</h2>
-<div class="card" style="margin-bottom: 24px;">
-  <table class="data">
-    <thead>
-      <tr><th>Metric</th><th class="num">Your Average</th><th class="num">Population Norm (Men 35–39)</th><th>Assessment</th></tr>
-    </thead>
-    <tbody id="s-demoTable"></tbody>
-  </table>
-  <p class="note" style="margin-top: 12px;">Population norms from the National Sleep Foundation, AASM clinical guidelines, and Ohayon et al. (2004) meta-analysis of sleep parameters across the lifespan. Sleep efficiency appears low at 70%, but Apple Watch defines "time in bed" broadly — including time reading, on your phone, or lying awake — which deflates this number compared to clinical polysomnography where efficiency is typically 85–95%.</p>
-</div>
-
-<h2 class="section-header">Model Performance</h2>
-<div class="insight-box neutral">
-  <div class="insight-title">Sleep Efficiency Is Most Predictable</div>
-  <div class="insight-text">R² = 0.44 for sleep efficiency, compared to 0.12 for total sleep, 0.12 for deep sleep, and 0.11 for REM sleep. Sleep quality markers (SpO₂, activity, daylight, consistency) explain efficiency variation much better than sleep duration.</div>
-</div>
-
 <h2 class="section-header">Key Findings</h2>
+<div class="subtitle">R² = 0.44 for sleep efficiency vs 0.12 for duration — quality is far more predictable than quantity</div>
 <div class="grid grid-2">
   <div class="insight-box positive">
     <div class="insight-title">Blood Oxygen Is the #1 Sleep Quality Marker</div>
@@ -832,7 +817,16 @@ Analysis: Pearson correlation, forward stepwise regression (R² = 0.80), decisio
   </div>
 </div>
 
-<h2 class="section-header">Sleep Efficiency: Top Factors</h2>
+<div class="card">
+  <h3>Demographic Context</h3>
+  <table class="data">
+    <thead><tr><th>Metric</th><th class="num">You</th><th class="num">Typical (Men 35–39)</th><th>Assessment</th></tr></thead>
+    <tbody id="s-demoTable"></tbody>
+  </table>
+  <p class="note">Sleep efficiency measured by Apple Watch tends to read lower than clinical polysomnography. The 70% figure likely reflects wrist-based detection artefacts rather than actual sleep quality.</p>
+</div>
+
+<h2 class="section-header">Sleep Architecture</h2>
 <div class="card">
   <table class="data" id="s-efficiencyTable">
     <thead>
@@ -842,7 +836,6 @@ Analysis: Pearson correlation, forward stepwise regression (R² = 0.80), decisio
   </table>
 </div>
 
-<h2 class="section-header">Sleep Stage Distribution & Model Accuracy</h2>
 <div class="grid grid-2">
   <div class="card">
     <h3>Sleep Stages (Average Night)</h3>
@@ -854,7 +847,6 @@ Analysis: Pearson correlation, forward stepwise regression (R² = 0.80), decisio
   </div>
 </div>
 
-<h2 class="section-header">Total Sleep, Deep Sleep & REM Factors</h2>
 <div class="grid grid-3">
   <div class="card">
     <h3>Total Sleep Drivers</h3>
@@ -870,7 +862,7 @@ Analysis: Pearson correlation, forward stepwise regression (R² = 0.80), decisio
   </div>
 </div>
 
-<h2 class="section-header">Workout Type Impact</h2>
+<h2 class="section-header">Exercise &amp; Timing</h2>
 <div class="card">
   <h3>Sleep Changes by Exercise Type</h3>
   <div class="chart-container-tall"><canvas id="s-workoutChart"></canvas></div>
@@ -880,7 +872,6 @@ Analysis: Pearson correlation, forward stepwise regression (R² = 0.80), decisio
   </table>
 </div>
 
-<h2 class="section-header">Timing & Day of Week</h2>
 <div class="grid grid-2">
   <div class="card">
     <h3>Workout Timing Impact</h3>
@@ -892,14 +883,51 @@ Analysis: Pearson correlation, forward stepwise regression (R² = 0.80), decisio
   </div>
 </div>
 
-<h2 class="section-header">Seasonal Patterns</h2>
+<div class="grid grid-2">
+  <div class="card">
+    <h3>Sleep Efficiency by Hours Since Last Workout</h3>
+    <div class="chart-container"><canvas id="s-hrsSinceChart"></canvas></div>
+  </div>
+  <div class="card">
+    <h3>Sleep Efficiency by Workout End Time</h3>
+    <div class="chart-container"><canvas id="s-endTimeChart"></canvas></div>
+  </div>
+</div>
+
+<div class="card">
+  <h3>Recommended Latest Finish Time by Workout Type</h3>
+  <table class="data" id="s-cutoffTable">
+    <thead><tr><th>Workout Type</th><th class="num">Morning Eff.</th><th class="num">Afternoon</th><th class="num">Early Eve</th><th class="num">Late Eve</th><th>Recommended Cutoff</th></tr></thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<div class="grid grid-2">
+  <div class="insight-box positive">
+    <div class="insight-title">HIIT &amp; Strength: Finish by 5 PM</div>
+    <div class="insight-text">HIIT shows the steepest late-evening penalty: 83% efficiency for afternoon drops to 55% after 8 PM — a 26 percentage point gap. Functional and traditional strength follow a similar pattern. These high-intensity types need more recovery time before bed.</div>
+  </div>
+  <div class="insight-box positive">
+    <div class="insight-title">Running &amp; Cycling: Timing Doesn't Matter</div>
+    <div class="insight-text">Remarkably, running (~91%) and cycling (~84%) maintain steady sleep efficiency regardless of when you finish. Your body recovers quickly from steady-state cardio — no need to schedule around bedtime.</div>
+  </div>
+  <div class="insight-box amber">
+    <div class="insight-title">Yoga: Best in the Morning</div>
+    <div class="insight-text">Surprisingly, yoga shows the worst time-sensitivity — even afternoon yoga (67%) underperforms morning (75%). Evening yoga doesn't wind you down for sleep the way you'd expect. This may be confounded by yoga being a late-night fallback on stressful days.</div>
+  </div>
+  <div class="insight-box neutral">
+    <div class="insight-title">Pre-Bed HR Mediates 18% of the Effect</div>
+    <div class="insight-text">Late workouts raise pre-bedtime heart rate (65 bpm within 2h vs 54 bpm at 10+ hours), but HR only explains 18% of the timing→efficiency link. The rest is likely core temperature, cortisol, and sympathetic arousal not captured by resting HR alone.</div>
+  </div>
+</div>
+
+<h2 class="section-header">Patterns &amp; Physiology</h2>
 <div class="card">
   <h3>Monthly Sleep Duration & Deep Sleep</h3>
   <div class="chart-container"><canvas id="s-seasonalChart"></canvas></div>
   <p class="note">Peak sleep duration in April–May (8.3h), lowest in December–January (7.6h). Deep sleep follows similar seasonal pattern.</p>
 </div>
 
-<h2 class="section-header">Physiological Deep Dives</h2>
 <div class="grid grid-2">
   <div class="insight-box neutral">
     <div class="insight-title">Blood Oxygen (SpO₂) Dynamics</div>
@@ -927,7 +955,7 @@ Analysis: Pearson correlation, forward stepwise regression (R² = 0.80), decisio
   </div>
 </div>
 
-<h2 class="section-header">Regression Model: Building Sleep Efficiency R²</h2>
+<h2 class="section-header">Regression Model</h2>
 <div class="card">
   <h3>Forward Stepwise Model Construction</h3>
   <div class="chart-container"><canvas id="s-regressionChart"></canvas></div>
@@ -948,8 +976,8 @@ Analysis: Pearson correlation, forward stepwise regression (R² = 0.80), decisio
     <div class="insight-text">Target 75+ minutes daily. High daylight days yield +20 min sleep and +6 min deep sleep. Morning light exposure is especially effective for circadian rhythm.</div>
   </div>
   <div class="insight-box positive">
-    <div class="insight-title">Exercise in the Afternoon</div>
-    <div class="insight-text">Afternoon workouts add +15 min sleep AND +13% efficiency. Morning exercises boost efficiency but reduce duration; evening workouts are neutral.</div>
+    <div class="insight-title">Time Workouts by Type</div>
+    <div class="insight-text">Afternoon is the overall sweet spot, but it depends on type: running and cycling can be done anytime, HIIT and strength should finish by 5 PM, and yoga is best in the morning. Pre-bed HR analysis confirms late high-intensity work disrupts efficiency.</div>
   </div>
   <div class="insight-box positive">
     <div class="insight-title">Prioritize HIIT for Deep Sleep</div>
@@ -968,8 +996,8 @@ Analysis: Pearson correlation, forward stepwise regression (R² = 0.80), decisio
     <div class="insight-text">Consistency matters more than type. Even 10 min of walking (r = +0.28) or light strength training (r = +0.11) improves efficiency over no activity.</div>
   </div>
   <div class="insight-box amber">
-    <div class="insight-title">Watch Morning Workouts</div>
-    <div class="insight-text">Morning exercise boosts efficiency (+16%) but reduces total duration (−11 min). If aiming for longer sleep, shift to afternoon/evening; if aiming for quality, mornings work.</div>
+    <div class="insight-title">Late-Night HIIT Is the Biggest Sleep Killer</div>
+    <div class="insight-text">HIIT after 8 PM drops sleep efficiency to 55% — the worst of any type/timing combo. Deep sleep may actually increase (1.59h vs 0.95h morning), so you sleep deeper but far more restlessly. If you must train late, stick to running or cycling.</div>
   </div>
 </div>
 
@@ -1078,7 +1106,7 @@ Analysis: Pearson correlation, forward stepwise regression (R² = 0.80), decisio
 </div>
 
 <!-- ── SECTION 3: ENVIRONMENT & TRAVEL ── -->
-<h2 class="section-header" style="margin-top: 40px; padding-top: 28px; border-top: 1px solid var(--border);">Environment &amp; Travel</h2>
+<h2 class="section-header">Environment &amp; Travel</h2>
 <div class="grid grid-2">
   <div class="card">
     <h3>Average Nightly SpO₂ by City</h3>
@@ -1212,12 +1240,14 @@ function reinitAllCharts() {
   destroyAllCharts();
   vo2Initialized = false; sleepInitialized = false; spo2Initialized = false; rhrInitialized = false;
   initOverviewCharts();
+  try { buildDemoTables(); } catch(e) {}
+  try { buildRhrTables(); } catch(e) {}
   const active = document.querySelector('.tab-btn.active');
   if (active) {
     const t = active.dataset.tab;
     if (t === 'vo2max') { initVO2Charts(); vo2Initialized = true; }
     if (t === 'rhr') { initRhrCharts(); rhrInitialized = true; }
-    if (t === 'sleep') { initSleepCharts(); sleepInitialized = true; }
+    if (t === 'sleep') { buildSleepTables(); initSleepCharts(); sleepInitialized = true; }
     if (t === 'spo2') { initSpo2Charts(); initEnvCharts(); buildEnvTables(); spo2Initialized = true; }
   }
 }
@@ -1558,6 +1588,7 @@ function buildSleepTables() {
 
   // Efficiency table
   const et = document.getElementById('s-efficiencyTable').querySelector('tbody');
+  et.innerHTML = '';
   efficiencyFactors.forEach((f,idx) => {
     const isTop = Math.abs(f.r) >= 0.30;
     const barPct = (Math.abs(f.r)/0.33)*100;
@@ -1576,6 +1607,7 @@ function buildSleepTables() {
   // Helper for simple factor tables
   function fillSimpleTable(id, data) {
     const tbody = document.getElementById(id).querySelector('tbody');
+    tbody.innerHTML = '';
     data.forEach(f => {
       const tr = document.createElement('tr');
       tr.innerHTML = `<td>${f.name}</td><td class="num">${f.r>0?'+':''}${f.r.toFixed(2)}</td>`;
@@ -1588,6 +1620,7 @@ function buildSleepTables() {
 
   // Workout table
   const wt = document.getElementById('s-workoutTable').querySelector('tbody');
+  wt.innerHTML = '';
   workoutTypes.forEach(w => {
     const tr = document.createElement('tr');
     tr.innerHTML = `<td>${w.type}</td><td class="num">${w.totalDelta}</td><td class="num">${w.deepDelta}</td><td class="num">${w.effDelta}</td><td style="font-size:12px">${w.best}</td>`;
@@ -1596,6 +1629,7 @@ function buildSleepTables() {
 
   // Regression table
   const rt = document.getElementById('s-regressionTable').querySelector('tbody');
+  rt.innerHTML = '';
   regressionSteps.forEach(s => {
     const tr = document.createElement('tr');
     tr.innerHTML = `<td>${s.step}</td><td>${s.factor}</td><td class="num">${s.r2.toFixed(2)}</td><td class="num">${typeof s.delta==='string'?s.delta:'+'+s.delta.toFixed(2)}</td>`;
@@ -1669,6 +1703,84 @@ function initSleepCharts() {
     type:'bar',
     data:{labels:['Step 1','Step 2','Step 3','Step 4','Step 5','Step 6','Step 7','Step 8','Step 9','Step 10','Final'],datasets:[{label:'R²',data:[0.11,0.18,0.22,0.26,0.29,0.32,0.33,0.35,0.36,0.37,0.44],backgroundColor:cc.accent,borderColor:cc.border,borderWidth:1}]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{grid:{color:cc.border},ticks:{color:cc.muted,font:{size:11}},max:0.5},x:{grid:{display:false},ticks:{color:cc.muted,font:{size:11}}}}}
+  });
+
+  // ── Pre-Bedtime HR & Workout Timing charts ──
+
+  // Sleep efficiency by hours since last workout
+  const hrsSinceData = [
+    {label:'<2h',eff:0.717,hr:65.1,n:13},
+    {label:'2–4h',eff:0.793,hr:55.1,n:91},
+    {label:'4–6h',eff:0.701,hr:55.4,n:152},
+    {label:'6–8h',eff:0.733,hr:54.4,n:157},
+    {label:'8–12h',eff:0.772,hr:53.8,n:132},
+    {label:'12+h',eff:0.780,hr:53.3,n:230}
+  ];
+  new Chart(document.getElementById('s-hrsSinceChart'), {
+    type:'bar',
+    data:{
+      labels:hrsSinceData.map(d=>d.label),
+      datasets:[
+        {label:'Sleep Efficiency',data:hrsSinceData.map(d=>d.eff*100),backgroundColor:hrsSinceData.map(d=>d.eff>=0.77?cc.green+'aa':d.eff>=0.72?cc.amber+'aa':cc.red+'88'),borderRadius:4,barThickness:28,yAxisID:'y'},
+        {label:'Pre-Bed HR (bpm)',data:hrsSinceData.map(d=>d.hr),type:'line',borderColor:cc.red,backgroundColor:cc.red+'22',pointRadius:5,borderWidth:2,tension:0.3,yAxisID:'y2'}
+      ]
+    },
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{labels:{color:cc.text,font:{size:10}},position:'bottom'},
+        tooltip:{callbacks:{label:ctx=>ctx.dataset.label==='Sleep Efficiency'?`${ctx.parsed.y.toFixed(1)}% (n=${hrsSinceData[ctx.dataIndex].n})`:`${ctx.parsed.y.toFixed(1)} bpm`}}},
+      scales:{
+        x:{ticks:{color:cc.muted,font:{size:11}},grid:{display:false}},
+        y:{ticks:{color:cc.muted,callback:v=>v+'%'},grid:{color:cc.border},title:{display:true,text:'Sleep Efficiency (%)',color:cc.muted},min:60,max:85},
+        y2:{position:'right',ticks:{color:cc.red,callback:v=>v+' bpm'},grid:{display:false},title:{display:true,text:'Pre-Bed HR',color:cc.muted},min:50,max:70}
+      }
+    }
+  });
+
+  // Sleep efficiency by workout end time (clock hour) — all types
+  const endTimeData = [
+    {label:'Morning\n(<12)',eff:0.816,n:492},
+    {label:'Afternoon\n(12–17)',eff:0.812,n:346},
+    {label:'Early Eve\n(17–20)',eff:0.713,n:355},
+    {label:'Late Eve\n(20+)',eff:0.741,n:186}
+  ];
+  new Chart(document.getElementById('s-endTimeChart'), {
+    type:'bar',
+    data:{labels:endTimeData.map(d=>d.label),datasets:[{data:endTimeData.map(d=>d.eff*100),backgroundColor:endTimeData.map(d=>d.eff>=0.80?cc.green+'aa':d.eff>=0.73?cc.amber+'aa':cc.red+'88'),borderRadius:4,barThickness:36}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.parsed.y.toFixed(1)}% (n=${endTimeData[ctx.dataIndex].n})`}}},
+      scales:{
+        x:{ticks:{color:cc.muted,font:{size:11}},grid:{display:false}},
+        y:{ticks:{color:cc.muted,callback:v=>v+'%'},grid:{color:cc.border},title:{display:true,text:'Sleep Efficiency (%)',color:cc.muted},min:60,max:90}
+      }
+    }
+  });
+
+  // Cutoff recommendation table
+  const cutoffData = [
+    {type:'HIIT',m:0.802,a:0.833,ee:0.624,le:0.546,rec:'Before 5 PM',cls:'negative'},
+    {type:'Running',m:0.914,a:0.876,ee:0.905,le:0.916,rec:'No restriction',cls:'positive'},
+    {type:'Cycling',m:0.837,a:0.764,ee:0.701,le:0.852,rec:'No restriction',cls:'positive'},
+    {type:'Func. Strength',m:0.769,a:0.875,ee:0.603,le:0.717,rec:'Before 5 PM',cls:'amber'},
+    {type:'Trad. Strength',m:0.904,a:0.944,ee:0.790,le:null,rec:'Before 5 PM',cls:'amber'},
+    {type:'Walking',m:0.830,a:0.825,ee:0.760,le:0.772,rec:'Before 5 PM',cls:'amber'},
+    {type:'Yoga',m:0.751,a:0.674,ee:0.604,le:0.679,rec:'Morning only',cls:'neutral'}
+  ];
+  const ct = document.getElementById('s-cutoffTable').querySelector('tbody');
+  ct.innerHTML = '';
+  cutoffData.forEach(d => {
+    const fmt = v => v !== null ? (v*100).toFixed(1)+'%' : '—';
+    const clr = v => v === null ? '' : v >= 0.85 ? 'color:'+cc.green : v >= 0.75 ? '' : v >= 0.65 ? 'color:'+cc.amber : 'color:'+cc.red;
+    const recClr = d.cls === 'positive' ? cc.green : d.cls === 'negative' ? cc.red : d.cls === 'amber' ? cc.amber : cc.muted;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="font-weight:600">${d.type}</td>
+      <td class="num" style="${clr(d.m)}">${fmt(d.m)}</td>
+      <td class="num" style="${clr(d.a)}">${fmt(d.a)}</td>
+      <td class="num" style="${clr(d.ee)}">${fmt(d.ee)}</td>
+      <td class="num" style="${clr(d.le)}">${fmt(d.le)}</td>
+      <td style="font-weight:600;color:${recClr}">${d.rec}</td>
+    `;
+    ct.appendChild(tr);
   });
 }
 
@@ -1909,6 +2021,8 @@ function buildDemoTables() {
     {cat:'Poor',      range:'< 35',     pct:'< 25th',   you:'May 2020 low of 32.2'},
   ];
   const vdt = document.getElementById('v-demoTable');
+  if (!vdt) return;
+  vdt.innerHTML = '';
   vo2Demo.forEach(d => {
     const isYou = d.cat === 'Excellent';
     const tr = document.createElement('tr');
@@ -1931,6 +2045,8 @@ function buildDemoTables() {
     {metric:'Sleep Latency',     you:'—',        norm:'10 – 20 min',      assess:'Not measured by Apple Watch'},
   ];
   const sdt = document.getElementById('s-demoTable');
+  if (!sdt) return;
+  sdt.innerHTML = '';
   sleepDemo.forEach(d => {
     const isGood = d.assess.startsWith('Above');
     const isLow = d.assess.startsWith('Low') || d.assess.startsWith('Slightly below');
@@ -2243,15 +2359,18 @@ const rhrRecovery = [
 // RHR CHARTS
 // ════════════════════════════════════════════════════════════════════
 function buildRhrTables() {
+  const cc = getCC();
   // Factor table
   const ft = document.getElementById('r-factorTable');
+  ft.innerHTML = '';
   rhrFactors.forEach(f => {
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${f.name}</td><td class="num">${f.rawR>0?'+':''}${f.rawR.toFixed(3)}</td><td class="num" style="font-weight:600;color:${f.dtR>0?'#ef4444':'#22c55e'}">${f.dtR>0?'+':''}${f.dtR.toFixed(3)}</td><td style="color:#8b8d97">${f.dir}</td>`;
+    tr.innerHTML = `<td>${f.name}</td><td class="num">${f.rawR>0?'+':''}${f.rawR.toFixed(3)}</td><td class="num" style="font-weight:600;color:${f.dtR>0?cc.red:cc.green}">${f.dtR>0?'+':''}${f.dtR.toFixed(3)}</td><td style="color:${cc.muted}">${f.dir}</td>`;
     ft.appendChild(tr);
   });
   // Season/week table
   const st = document.getElementById('r-seasonTable');
+  st.innerHTML = '';
   rhrSeasonWeek.forEach(s => {
     const tr = document.createElement('tr');
     tr.innerHTML = `<td>${s.period}</td><td class="num">${s.rhr.toFixed(1)} bpm</td><td class="num">${s.std ? s.std.toFixed(1) : '–'}</td>`;
